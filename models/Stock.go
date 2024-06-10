@@ -5,12 +5,11 @@ import (
 )
 
 type Stock struct {
-	ProductId      uint `gorm:"primary_key"`
-	QuantitySizeS  uint
-	QuantitySizeM  uint
-	QuantitySizeL  uint
-	QuantitySizeXL uint
-	StockCreatedAt time.Time
-	StockUpdatedAt time.Time
-	Product        Product `gorm:"foreignKey:ProductId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ProductId      uint `gorm:"foreignkey:product_id"`
+	QuantitySizeS  uint `gorm:"column:quantity_size_s"`
+	QuantitySizeM  uint `gorm:"column:quantity_size_m"`
+	QuantitySizeL  uint `gorm:"column:quantity_size_l"`
+	QuantitySizeXL uint `gorm:"column:quantity_size_xl"`
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }

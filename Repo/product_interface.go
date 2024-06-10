@@ -4,7 +4,7 @@ import (
 	"awesomeProject/entities"
 )
 
-type Repo interface {
+type ProductRepoI interface {
 	SaveCreateProduct(product *entities.Product) error
 	SaveGetAllProduct() ([]entities.Product, error)
 	SaveGetByIDProduct(id uint) (entities.Product, error)

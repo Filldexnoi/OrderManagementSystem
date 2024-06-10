@@ -7,15 +7,20 @@ import (
 )
 
 type ProductHandler struct {
-	UseCase Usecase.UseCase
+	UseCase Usecase.ProductUseCaseI
+}
+type ProductJson struct {
+	ProductTypes string  `json:"product_types"`
+	ProductName  string  `json:"product_name"`
+	ProductPrice float64 `json:"product_price"`
 }
 
-func NewProductHandler(UseCase Usecase.UseCase) *ProductHandler {
+func NewProductHandler(UseCase Usecase.ProductUseCaseI) ProductHandlerI {
 	return &ProductHandler{UseCase: UseCase}
 }
 
 func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
-	product := new(entities.Product)
+	product := new(ProductJson)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}

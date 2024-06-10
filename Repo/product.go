@@ -5,32 +5,32 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductRepo struct {
+type Product struct {
 	db *gorm.DB
 }
 
-func NewProductRepo(db *gorm.DB) Repo {
-	return &ProductRepo{db: db}
+func NewProductRepo(db *gorm.DB) ProductRepoI {
+	return &Product{db: db}
 }
 
-func (r *ProductRepo) SaveCreateProduct(product *entities.Product) error {
+func (r *Product) SaveCreateProduct(product *entities.Product) error {
 	return r.db.Create(product).Error
 }
 
-func (r *ProductRepo) SaveUpdateProduct(product *entities.Product) error {
+func (r *Product) SaveUpdateProduct(product *entities.Product) error {
 	return r.db.Model(&entities.Product{}).Where("product_id = ?", product.ProductId).Updates(product).Error
 }
 
-func (r *ProductRepo) SaveDeleteProduct(id uint) error {
+func (r *Product) SaveDeleteProduct(id uint) error {
 	return r.db.Delete(&entities.Product{}, id).Error
 }
 
-func (r *ProductRepo) SaveGetAllProduct() ([]entities.Product, error) {
+func (r *Product) SaveGetAllProduct() ([]entities.Product, error) {
 	var products []entities.Product
 	err := r.db.Find(&products).Error
 	return products, err
 }
-func (r *ProductRepo) SaveGetByIDProduct(id uint) (entities.Product, error) {
+func (r *Product) SaveGetByIDProduct(id uint) (entities.Product, error) {
 	var product entities.Product
 	err := r.db.First(&product, id).Error
 	return product, err

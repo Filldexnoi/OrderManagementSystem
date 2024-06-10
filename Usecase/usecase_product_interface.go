@@ -4,7 +4,7 @@ import (
 	"awesomeProject/entities"
 )
 
-type UseCase interface {
+type ProductUseCaseI interface {
 	CreateProduct(product *entities.Product) error
 	GetAllProducts() ([]entities.Product, error)
 	GetByIDProduct(id uint) (entities.Product, error)

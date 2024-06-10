@@ -5,12 +5,21 @@ import (
 	"awesomeProject/Usecase"
 )
 
-func (s *FiberServer) SetupFiberRoute(productUseCase Usecase.UseCase) {
+func (s *FiberServer) SetupFiberRoute(productUseCase Usecase.ProductUseCaseI, stockUseCase Usecase.StockUseCaseI) {
 	productHandler := Handler.NewProductHandler(productUseCase)
 
-	s.app.Post("/products", productHandler.CreateProduct)
+	s.app.Post("/product", productHandler.CreateProduct)
 	s.app.Get("/products", productHandler.GetAllProducts)
-	s.app.Get("/products/:id", productHandler.GetProductByID)
-	s.app.Put("/products/:id", productHandler.UpdateProduct)
-	s.app.Delete("/products/:id", productHandler.DeleteProduct)
+	s.app.Get("/product/:id", productHandler.GetProductByID)
+	s.app.Put("/product/:id", productHandler.UpdateProduct)
+	s.app.Delete("/product/:id", productHandler.DeleteProduct)
+
+	stockHandler := Handler.NewStockHandler(stockUseCase)
+
+	s.app.Post("/stock", stockHandler.CreateStock)
+	s.app.Get("/stocks", stockHandler.GetAllQtyProducts)
+	s.app.Get("/product/:id", stockHandler.GetQtyProductByID)
+	s.app.Put("/product/:id", stockHandler.UpdateStock)
+	s.app.Delete("/product/:id", stockHandler.DeleteStock)
+
 }

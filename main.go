@@ -23,8 +23,10 @@ func main() {
 	productRepo := Repo.NewProductRepo(db.SQL)
 	productUseCase := Usecase.NewProductUseCase(productRepo)
 
+	stockRepo := Repo.NewStock(db.SQL)
+	stockUseCase := Usecase.NewStockUseCase(stockRepo)
 	s := server.NewFiberServer()
-	s.SetupFiberRoute(productUseCase)
+	s.SetupFiberRoute(productUseCase, stockUseCase)
 	if err := s.Start(cfg.PORT); err != nil {
 		log.Fatal(err)
 	}

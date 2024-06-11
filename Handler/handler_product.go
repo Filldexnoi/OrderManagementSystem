@@ -2,7 +2,7 @@ package Handler
 
 import (
 	"awesomeProject/Usecase"
-	"awesomeProject/entities"
+	"awesomeProject/adpter"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,22 +14,8 @@ func NewProductHandler(UseCase Usecase.ProductUseCaseI) ProductHandlerI {
 	return &ProductHandler{UseCase: UseCase}
 }
 
-type Product struct {
-	ProductTypes string  `json:"product_types"`
-	ProductName  string  `json:"product_name"`
-	ProductPrice float64 `json:"product_price"`
-}
-
-func (p *Product) ToProduct() *entities.Product {
-	return &entities.Product{
-		ProductTypes: p.ProductTypes,
-		ProductName:  p.ProductName,
-		ProductPrice: p.ProductPrice,
-	}
-}
-
 func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
-	product := new(Product)
+	product := new(adpter.ProductBrowserInput)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -45,6 +31,7 @@ func (h *ProductHandler) GetAllProducts(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
+
 	return c.JSON(products)
 }
 
@@ -57,7 +44,7 @@ func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(product)
+	return c.JSON(adpter.ToProduct(product))
 }
 
 func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
@@ -65,12 +52,11 @@ func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid product ID"})
 	}
-	product := new(entities.Product)
+	product := new(adpter.ProductBrowserInput)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	product.ProductId = uint(id)
-	err = h.UseCase.UpdateProduct(product)
+	err = h.UseCase.UpdateProduct(product.ToProduct(), uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

@@ -9,22 +9,31 @@ import (
 type ProductHandler struct {
 	UseCase Usecase.ProductUseCaseI
 }
-type ProductJson struct {
-	ProductTypes string  `json:"product_types"`
-	ProductName  string  `json:"product_name"`
-	ProductPrice float64 `json:"product_price"`
-}
 
 func NewProductHandler(UseCase Usecase.ProductUseCaseI) ProductHandlerI {
 	return &ProductHandler{UseCase: UseCase}
 }
 
+type Product struct {
+	ProductTypes string  `json:"product_types"`
+	ProductName  string  `json:"product_name"`
+	ProductPrice float64 `json:"product_price"`
+}
+
+func (p *Product) ToProduct() *entities.Product {
+	return &entities.Product{
+		ProductTypes: p.ProductTypes,
+		ProductName:  p.ProductName,
+		ProductPrice: p.ProductPrice,
+	}
+}
+
 func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
-	product := new(ProductJson)
+	product := new(Product)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err := h.UseCase.CreateProduct(product)
+	err := h.UseCase.CreateProduct(product.ToProduct())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

@@ -20,7 +20,7 @@ func (r *ProductDB) SaveCreateProduct(product *entities.Product) error {
 }
 
 func (r *ProductDB) SaveUpdateProduct(product *entities.Product, id uint) error {
-	return r.db.Model(&models.Product{}).Where("product_id = ?", id).Updates(product).Error
+	return r.db.Model(&models.Product{}).Where("product_id = ?", id).Updates(adpter.ToProductDatabase(product)).Error
 }
 
 func (r *ProductDB) SaveDeleteProduct(id uint) error {

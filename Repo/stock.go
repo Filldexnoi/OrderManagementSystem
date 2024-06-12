@@ -1,6 +1,7 @@
 package Repo
 
 import (
+	"awesomeProject/adpter"
 	"awesomeProject/entities"
 	"gorm.io/gorm"
 )
@@ -14,19 +15,23 @@ func NewStock(db *gorm.DB) StockRepoI {
 }
 
 func (r *Stock) SaveCreateStock(stock *entities.Stock) error {
-	return r.db.Create(stock).Error
+	err := r.db.First(&entities.Product{}, stock.ProductId).Error
+	if err != nil {
+		return err
+	}
+	return r.db.Create(adpter.StockToCreateStockData(stock)).Error
 }
 
-func (r *Stock) SaveUpdateStock(stock *entities.Stock) error {
-	return r.db.Model(&entities.Stock{}).Where("product_id = ?", stock.ProductId).Updates(stock).Error
+func (r *Stock) SaveUpdateStock(stock *entities.Stock, id uint) error {
+	return r.db.Model(&entities.Stock{}).Where("product_id = ?", id).Updates(adpter.StockToUpdateStockData(stock)).Error
 }
 
 func (r *Stock) SaveDeleteStock(id uint) error {
 	return r.db.Delete(&entities.Stock{}, id).Error
 }
 
-func (r *Stock) SaveGetQtyAllProduct() ([]entities.Stock, error) {
-	var stocks []entities.Stock
+func (r *Stock) SaveGetQtyAllProduct() ([]adpter.CRStockJson, error) {
+	var stocks []adpter.CRStockJson
 	err := r.db.Find(&stocks).Error
 	return stocks, err
 }

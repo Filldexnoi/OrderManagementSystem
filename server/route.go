@@ -18,8 +18,8 @@ func (s *FiberServer) SetupFiberRoute(productUseCase Usecase.ProductUseCaseI, st
 
 	s.app.Post("/stock", stockHandler.CreateStock)
 	s.app.Get("/stocks", stockHandler.GetAllQtyProducts)
-	s.app.Get("/product/:id", stockHandler.GetQtyProductByID)
-	s.app.Put("/product/:id", stockHandler.UpdateStock)
-	s.app.Delete("/product/:id", stockHandler.DeleteStock)
+	s.app.Get("/stock/:id", stockHandler.GetQtyProductByID)
+	s.app.Put("/stock/:id", stockHandler.UpdateStock)
+	s.app.Delete("/stock/:id", stockHandler.DeleteStock)
 
 }

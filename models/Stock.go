@@ -5,7 +5,7 @@ import (
 )
 
 type Stock struct {
-	ProductId      uint `gorm:"foreignkey:product_id"`
+	ProductId      uint `gorm:"column:product_id;primaryKey;"`
 	QuantitySizeS  uint `gorm:"column:quantity_size_s"`
 	QuantitySizeM  uint `gorm:"column:quantity_size_m"`
 	QuantitySizeL  uint `gorm:"column:quantity_size_l"`

@@ -2,7 +2,7 @@ package Handler
 
 import (
 	"awesomeProject/Usecase"
-	"awesomeProject/adpter"
+	"awesomeProject/payload"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,7 +15,7 @@ func NewProductHandler(UseCase Usecase.ProductUseCaseI) ProductHandlerI {
 }
 
 func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
-	product := new(adpter.ProductBrowserInput)
+	product := new(payload.IncomingProduct)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -44,7 +44,7 @@ func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(adpter.ToProduct(product))
+	return c.JSON(payload.ToOutgoingProduct(product))
 }
 
 func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
@@ -52,7 +52,7 @@ func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid product ID"})
 	}
-	product := new(adpter.ProductBrowserInput)
+	product := new(payload.IncomingProduct)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}

@@ -21,7 +21,10 @@ func InitPostgres(config *config.Config) (*gorm.DB, error) {
 		return nil, err
 	}
 	CreateProductTable(db)
+	CreateTransactionTable(db)
 	CreateStockTable(db)
+	CreateOrderTable(db)
+	CreateItemTable(db)
 
 	return db, nil
 }
@@ -35,6 +38,27 @@ func CreateProductTable(db *gorm.DB) {
 
 func CreateStockTable(db *gorm.DB) {
 	err := db.AutoMigrate(&models.Stock{})
+	if err != nil {
+		log.Fatal("Error loading config:", err)
+	}
+}
+
+func CreateOrderTable(db *gorm.DB) {
+	err := db.AutoMigrate(&models.Order{})
+	if err != nil {
+		log.Fatal("Error loading config:", err)
+	}
+}
+
+func CreateTransactionTable(db *gorm.DB) {
+	err := db.AutoMigrate(&models.Transaction{})
+	if err != nil {
+		log.Fatal("Error loading config:", err)
+	}
+}
+
+func CreateItemTable(db *gorm.DB) {
+	err := db.AutoMigrate(&models.Item{})
 	if err != nil {
 		log.Fatal("Error loading config:", err)
 	}

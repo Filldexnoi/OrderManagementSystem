@@ -2,8 +2,8 @@ package Usecase
 
 import (
 	"awesomeProject/Repo"
-	"awesomeProject/adpter"
 	"awesomeProject/entities"
+	"awesomeProject/payload"
 )
 
 type ProductUseCase struct {
@@ -18,7 +18,7 @@ func (s *ProductUseCase) CreateProduct(product *entities.Product) error {
 	return s.repo.SaveCreateProduct(product)
 }
 
-func (s *ProductUseCase) GetAllProducts() ([]adpter.ProductBrowserOutput, error) {
+func (s *ProductUseCase) GetAllProducts() ([]payload.OutgoingProduct, error) {
 	return s.repo.SaveGetAllProduct()
 }
 

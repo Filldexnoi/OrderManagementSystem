@@ -2,7 +2,7 @@ package Handler
 
 import (
 	"awesomeProject/Usecase"
-	"awesomeProject/adpter"
+	"awesomeProject/payload"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,7 +15,7 @@ func NewStockHandler(useCase Usecase.StockUseCaseI) *StockHandler {
 }
 
 func (h *StockHandler) CreateStock(c *fiber.Ctx) error {
-	stock := new(adpter.CRStockJson)
+	stock := new(payload.OutgoingStock)
 	if err := c.BodyParser(stock); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -43,7 +43,7 @@ func (h *StockHandler) GetQtyProductByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(adpter.ToStockJson(stock))
+	return c.JSON(payload.ToStockJson(stock))
 }
 
 func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
@@ -51,7 +51,7 @@ func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid product ID"})
 	}
-	stock := new(adpter.UStockJson)
+	stock := new(payload.IncomingStockJson)
 	if err := c.BodyParser(stock); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}

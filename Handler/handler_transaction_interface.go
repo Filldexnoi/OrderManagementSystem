@@ -1,7 +1,7 @@
 package Handler
 
-import "awesomeProject/entities"
+import "github.com/gofiber/fiber/v2"
 
 type TransactionHandlerI interface {
-	CreateTransaction(order entities.Order) error
+	CreateTransaction(c *fiber.Ctx) error
 }

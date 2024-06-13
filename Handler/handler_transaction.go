@@ -2,7 +2,8 @@ package Handler
 
 import (
 	"awesomeProject/Usecase"
-	"awesomeProject/adpter"
+	"awesomeProject/payload"
+	"errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,19 +16,9 @@ func NewTransactionHandler(u Usecase.TransactionUseCaseI) TransactionHandlerI {
 }
 
 func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
-	transaction := new(adpter.TransactionJsonInput)
-	if err := c.BodyParser(transaction); err != nil {
+	transactionPayload := new(payload.IncomingTransaction)
+	if err := c.BodyParser(transactionPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	orderId := transaction.OrderId
-	order, err := h.UseCase.GetOrder(orderId)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
-	}
-
-	err := h.UseCase.CreateStock()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
-	}
-	return c.Status(fiber.StatusCreated).JSON(stock)
+	return errors.New("5555")
 }

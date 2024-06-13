@@ -2,8 +2,8 @@ package Usecase
 
 import (
 	"awesomeProject/Repo"
-	"awesomeProject/adpter"
 	"awesomeProject/entities"
+	"awesomeProject/payload"
 )
 
 type StockUseCase struct {
@@ -26,7 +26,7 @@ func (s *StockUseCase) DeleteStock(id uint) error {
 	return s.repo.SaveDeleteStock(id)
 }
 
-func (s *StockUseCase) GetQtyAllProduct() ([]adpter.CRStockJson, error) {
+func (s *StockUseCase) GetQtyAllProduct() ([]payload.OutgoingStock, error) {
 	return s.repo.SaveGetQtyAllProduct()
 }
 

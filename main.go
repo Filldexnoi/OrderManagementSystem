@@ -25,7 +25,7 @@ func main() {
 	stockRepo := Repo.NewStock(db.SQL)
 	UseCase.Stock = Usecase.NewStockUseCase(stockRepo)
 	transactionRepo := Repo.NewTransactionRepo(db.SQL)
-	UseCase.Transaction = Usecase.NewTransactionUseCase(transactionRepo)
+	UseCase.Transaction = Usecase.NewTransactionUseCase(transactionRepo, productRepo)
 	orderRepo := Repo.NewOrderRepo(db.SQL)
 	UseCase.Order = Usecase.NewOrderUseCase(orderRepo)
 	s := server.NewFiberServer()

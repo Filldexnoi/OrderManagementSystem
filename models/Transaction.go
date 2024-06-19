@@ -2,12 +2,13 @@ package models
 
 import (
 	"awesomeProject/entities"
+	"github.com/google/uuid"
 	"time"
 )
 
 type Transaction struct {
-	TransactionID uint   `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	OrderAddress  string `gorm:"column:order_address"`
+	TransactionID uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	OrderAddress  string    `gorm:"column:order_address"`
 	Items         []Item
 	TotalPrice    float64   `gorm:"column:total_price"`
 	CreatedAt     time.Time `gorm:"autoCreateTime"`
@@ -15,9 +16,9 @@ type Transaction struct {
 }
 
 type Item struct {
-	TransactionID uint `gorm:"column:transaction_id;primaryKey"`
-	ProductID     uint `gorm:"column:product_id;primaryKey"`
-	Quantity      uint `gorm:"column:quantity"`
+	TransactionID uuid.UUID `gorm:"type:uuid;primaryKey"`
+	ProductID     uint      `gorm:"column:product_id;primaryKey"`
+	Quantity      uint      `gorm:"column:quantity"`
 	Product       *Product
 }
 
@@ -54,8 +55,8 @@ func (t Transaction) ToItems() []entities.Item {
 	return items
 }
 
-func TransactionToGormTransaction(transaction entities.Transaction) Transaction {
-	return Transaction{
+func TransactionToGormTransaction(transaction *entities.Transaction) *Transaction {
+	return &Transaction{
 		TransactionID: transaction.TransactionId,
 		OrderAddress:  transaction.OrderAddress,
 		Items:         ItemToGormItem(transaction),
@@ -63,7 +64,7 @@ func TransactionToGormTransaction(transaction entities.Transaction) Transaction 
 	}
 }
 
-func ItemToGormItem(transaction entities.Transaction) []Item {
+func ItemToGormItem(transaction *entities.Transaction) []Item {
 	var items []Item
 	for _, item := range transaction.Items {
 		items = append(items, Item{

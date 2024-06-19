@@ -23,6 +23,7 @@ func InitPostgres(config *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
 	CreateProductTable(db)
 	CreateTransactionTable(db)
 	CreateStockTable(db)

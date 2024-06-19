@@ -1,6 +1,9 @@
 package payload
 
-import "awesomeProject/entities"
+import (
+	"awesomeProject/entities"
+	"github.com/google/uuid"
+)
 
 type Item struct {
 	ProductId uint `json:"product_id"`
@@ -13,10 +16,10 @@ type RequestTransaction struct {
 }
 
 type RespondTransaction struct {
-	TransactionID uint    `json:"transaction_id"`
-	Address       string  `json:"address"`
-	Items         []Item  `json:"items"`
-	TotalPrice    float64 `json:"total_price"`
+	TransactionID uuid.UUID `json:"transaction_id"`
+	Address       string    `json:"address"`
+	Items         []Item    `json:"items"`
+	TotalPrice    float64   `json:"total_price"`
 }
 
 func (t *RequestTransaction) ToTransaction() *entities.Transaction {

@@ -19,11 +19,7 @@ func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
 	if err := c.BodyParser(transactionPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	transaction := transactionPayload.ToTransaction()
-	if !transaction.IsValidCountry(transaction.OrderAddress) {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Dont have this country"})
-	}
-	err := h.UseCase.CreateTransaction(transaction)
+	err := h.UseCase.CreateTransaction(transactionPayload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

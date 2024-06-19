@@ -10,4 +10,5 @@ type ProductRepoI interface {
 	SaveGetByIDProduct(id uint) (*entities.Product, error)
 	SaveUpdateProduct(product *entities.Product) error
 	SaveDeleteProduct(id uint) error
+	GetPriceProducts(transaction *entities.Transaction) (*entities.Transaction, error)
 }

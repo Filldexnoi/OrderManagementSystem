@@ -51,3 +51,15 @@ func (r *ProductDB) SaveGetByIDProduct(id uint) (*entities.Product, error) {
 	product := productGorm.ToProduct()
 	return product, err
 }
+
+func (r *ProductDB) GetPriceProducts(transaction *entities.Transaction) (*entities.Transaction, error) {
+	var product models.Product
+	for i, item := range transaction.Items {
+		err := r.db.Model(&models.Product{}).Select("product_price").Where("product_id = ?", item.ProductId).First(&product).Error
+		if err != nil {
+			return nil, errors.New("product not found")
+		}
+		transaction.Items[i].Price = product.ProductPrice
+	}
+	return transaction, nil
+}

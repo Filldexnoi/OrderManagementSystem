@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"github.com/google/uuid"
 	"strings"
 )
 
@@ -255,7 +256,7 @@ var validCountries = map[string]string{
 }
 
 type Transaction struct {
-	TransactionId uint
+	TransactionId uuid.UUID
 	OrderAddress  string
 	Items         []Item
 	TotalPrice    float64
@@ -265,10 +266,6 @@ type Item struct {
 	ProductId uint
 	Quantity  uint
 	Price     float64
-}
-
-func (t *Transaction) TableName() string {
-	return "transactions"
 }
 
 func (t *Transaction) CalPrice() {

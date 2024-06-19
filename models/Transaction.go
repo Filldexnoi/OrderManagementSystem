@@ -12,9 +12,9 @@ type Transaction struct {
 }
 
 type Item struct {
-	TransactionId uint    `gorm:"column:transaction_id;primaryKey"`
-	Product       Product `gorm:"column:product_id;foreignKey:product_id;primaryKey"`
-	Quantity      uint    `gorm:"column:quantity"`
+	TransactionId uint `gorm:"column:transaction_id;primaryKey"`
+	Product       uint `gorm:"column:product_id;foreignKey:product_id;primaryKey"`
+	Quantity      uint `gorm:"column:quantity"`
 }
 
 func (Transaction) TableName() string {

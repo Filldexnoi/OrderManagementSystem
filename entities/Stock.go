@@ -4,10 +4,7 @@ import "time"
 
 type Stock struct {
 	ProductId      uint
-	QuantitySizeS  uint
-	QuantitySizeM  uint
-	QuantitySizeL  uint
-	QuantitySizeXL uint
+	Quantity       uint
 	StockCreatedAt time.Time
 	StockUpdatedAt time.Time
 }

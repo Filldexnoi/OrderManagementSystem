@@ -5,7 +5,7 @@ import (
 )
 
 type Product struct {
-	ProductId        int       `gorm:"column:product_id;primaryKey;autoIncrement"`
+	ProductId        uint      `gorm:"column:product_id;primaryKey;autoIncrement"`
 	ProductTypes     string    `gorm:"column:product_types"`
 	ProductName      string    `gorm:"column:product_name"`
 	ProductPrice     float64   `gorm:"column:product_price"`

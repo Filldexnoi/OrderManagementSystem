@@ -1,5 +1,7 @@
 package payload
 
+import "awesomeProject/entities"
+
 type SaveTransactionData struct {
 	Address    string
 	Items      []Item
@@ -23,9 +25,19 @@ type OutgoingTransaction struct {
 	TotalPrice    float64 `json:"total_price"`
 }
 
-//func (t *IncomingTransaction) ToEntityTransaction() entities.Transaction {
-//	return entities.Transaction{
-//		OrderAddress: t.Address,
-//		Items:        t.Items,
-//	}
-//}
+func (t *SaveTransactionData) TableName() string {
+	return "transactions"
+}
+func (t *IncomingTransaction) ToEntityTransaction() *entities.Transaction {
+	items := make([]entities.Item, len(t.Items))
+	for i, item := range t.Items {
+		items[i] = entities.Item{
+			ProductId: item.ProductId,
+			Quantity:  item.Quantity,
+		}
+	}
+	return &entities.Transaction{
+		OrderAddress: t.Address,
+		Items:        items,
+	}
+}

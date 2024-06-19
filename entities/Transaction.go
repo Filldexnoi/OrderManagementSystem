@@ -1,6 +1,8 @@
 package entities
 
-import "strings"
+import (
+	"strings"
+)
 
 var validCountries = map[string]string{
 	"af": "Afghanistan",
@@ -265,11 +267,11 @@ type Item struct {
 	Price     float64
 }
 
-func (Transaction) TableName() string {
+func (t *Transaction) TableName() string {
 	return "transactions"
 }
 
-func (t Transaction) CalPrice() {
+func (t *Transaction) CalPrice() {
 	var TotalPrice float64 = 0
 	for _, item := range t.Items {
 		TotalPrice += item.Price * float64(item.Quantity)
@@ -282,11 +284,11 @@ func (t Transaction) CalPrice() {
 	t.TotalPrice = TotalPrice
 }
 
-func (t Transaction) isWithinThailand(country string) bool {
+func (t *Transaction) isWithinThailand(country string) bool {
 	return strings.ToLower(country) == "th"
 }
 
-func isValidCountry(country string) bool {
+func (t *Transaction) IsValidCountry(country string) bool {
 	_, exists := validCountries[strings.ToLower(country)]
 	return exists
 }

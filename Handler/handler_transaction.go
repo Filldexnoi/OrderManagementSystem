@@ -3,7 +3,6 @@ package Handler
 import (
 	"awesomeProject/Usecase"
 	"awesomeProject/payload"
-	"errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,5 +19,13 @@ func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
 	if err := c.BodyParser(transactionPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	return errors.New("5555")
+	transaction := transactionPayload.ToEntityTransaction()
+	if !transaction.IsValidCountry(transaction.OrderAddress) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Dont have this country"})
+	}
+	err := h.UseCase.CreateTransaction(transaction)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(transactionPayload)
 }

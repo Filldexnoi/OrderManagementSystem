@@ -4,6 +4,7 @@ import (
 	"awesomeProject/entities"
 	"awesomeProject/models"
 	"awesomeProject/payload"
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -16,7 +17,11 @@ func NewProductRepo(db *gorm.DB) ProductRepoI {
 }
 
 func (r *ProductDB) SaveCreateProduct(product *entities.Product) error {
-	return r.db.Create(payload.ToInComingProduct(product)).Error
+	err := r.db.Create(payload.ToInComingProduct(product)).Error
+	if err != nil {
+		return errors.New("cannot create product")
+	}
+	return nil
 }
 
 func (r *ProductDB) SaveUpdateProduct(product *entities.Product, id uint) error {

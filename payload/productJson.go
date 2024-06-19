@@ -20,6 +20,9 @@ type OutgoingProduct struct {
 func (p *OutgoingProduct) TableName() string {
 	return "products"
 }
+func (p *IncomingProduct) TableName() string {
+	return "products"
+}
 func (p *IncomingProduct) ToProduct() *entities.Product {
 	return &entities.Product{
 		ProductTypes: p.ProductTypes,

@@ -3,6 +3,7 @@ package Repo
 import (
 	"awesomeProject/entities"
 	"awesomeProject/payload"
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -19,10 +20,15 @@ func (r *Stock) SaveCreateStock(stock *entities.Stock) error {
 	if err != nil {
 		return err
 	}
+
 	return r.db.Create(payload.IncomingStock(stock)).Error
 }
 
 func (r *Stock) SaveUpdateStock(stock *entities.Stock, id uint) error {
+	err := r.db.First(&entities.Product{}, id).Error
+	if err != nil {
+		return errors.New("dont have Stock this product")
+	}
 	return r.db.Model(&entities.Stock{}).Where("product_id = ?", id).Updates(payload.IncomingStock(stock)).Error
 }
 

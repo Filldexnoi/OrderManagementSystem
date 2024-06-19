@@ -5,11 +5,8 @@ import (
 )
 
 type Stock struct {
-	Product        Product `gorm:"column:product_id;primaryKey;"`
-	QuantitySizeS  uint    `gorm:"column:quantity_size_s"`
-	QuantitySizeM  uint    `gorm:"column:quantity_size_m"`
-	QuantitySizeL  uint    `gorm:"column:quantity_size_l"`
-	QuantitySizeXL uint    `gorm:"column:quantity_size_xl"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
+	Product   Product `gorm:"column:product_id;primaryKey;"`
+	Quantity  uint    `gorm:"column:quantity"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

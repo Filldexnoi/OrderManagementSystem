@@ -2,11 +2,11 @@ package payload
 
 import "awesomeProject/entities"
 
-type IncomingOrder struct {
+type RequestOrder struct {
 	TransactionId uint `json:"transaction_id"`
 }
 
-func (p *IncomingOrder) ToEntityOrder() entities.Order {
+func (p *RequestOrder) ToEntityOrder() entities.Order {
 	return entities.Order{
 		TransactionId: p.TransactionId,
 	}

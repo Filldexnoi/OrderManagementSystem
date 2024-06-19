@@ -39,7 +39,7 @@ func (r *TransactionRepo) SaveCreateTransaction(transaction *entities.Transactio
 	for _, item := range transaction.Items {
 		dbItem := models.Item{
 			TransactionId: transactionSave.TransactionId,
-			Product:       item.ProductId,
+			Product:       models.Product{ProductId: item.ProductId},
 			Quantity:      item.Quantity,
 		}
 		transactionSave.Items = append(transactionSave.Items, dbItem)

@@ -2,33 +2,24 @@ package payload
 
 import "awesomeProject/entities"
 
-type SaveTransactionData struct {
-	Address    string
-	Items      []Item
-	TotalPrice float64
-}
-
 type Item struct {
 	ProductId uint `json:"product_id"`
 	Quantity  uint `json:"quantity"`
 }
 
-type IncomingTransaction struct {
+type RequestTransaction struct {
 	Address string `json:"address"`
 	Items   []Item `json:"items"`
 }
 
-type OutgoingTransaction struct {
+type RespondTransaction struct {
 	TransactionID uint    `json:"transaction_id"`
 	Address       string  `json:"address"`
 	Items         []Item  `json:"items"`
 	TotalPrice    float64 `json:"total_price"`
 }
 
-func (t *SaveTransactionData) TableName() string {
-	return "transactions"
-}
-func (t *IncomingTransaction) ToEntityTransaction() *entities.Transaction {
+func (t *RequestTransaction) ToTransaction() *entities.Transaction {
 	items := make([]entities.Item, len(t.Items))
 	for i, item := range t.Items {
 		items[i] = entities.Item{
@@ -39,5 +30,21 @@ func (t *IncomingTransaction) ToEntityTransaction() *entities.Transaction {
 	return &entities.Transaction{
 		OrderAddress: t.Address,
 		Items:        items,
+	}
+}
+
+func TransactionToResTransaction(transaction *entities.Transaction) *RespondTransaction {
+	items := make([]Item, len(transaction.Items))
+	for i, item := range transaction.Items {
+		items[i] = Item{
+			ProductId: item.ProductId,
+			Quantity:  item.Quantity,
+		}
+	}
+	return &RespondTransaction{
+		TransactionID: transaction.TransactionId,
+		Address:       transaction.OrderAddress,
+		Items:         items,
+		TotalPrice:    transaction.TotalPrice,
 	}
 }

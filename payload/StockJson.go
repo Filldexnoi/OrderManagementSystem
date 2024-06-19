@@ -2,46 +2,25 @@ package payload
 
 import "awesomeProject/entities"
 
-type OutgoingStock struct {
+type RespondStock struct {
 	ProductId uint `json:"product_id"`
 	Quantity  uint `json:"quantity"`
 }
 
-type IncomingStockJson struct {
+type RequestStock struct {
 	ProductId uint `json:"product_id"`
 	Quantity  uint `json:"quantity"`
 }
 
-func (s *OutgoingStock) TableName() string {
-	return "stocks"
-}
-func (s *IncomingStockJson) TableName() string {
-	return "stocks"
-}
-
-func (s *IncomingStockJson) ToStockEntity() *entities.Stock {
+func (s *RequestStock) ToStock() *entities.Stock {
 	return &entities.Stock{
 		ProductId: s.ProductId,
 		Quantity:  s.Quantity,
 	}
 }
 
-func (s *OutgoingStock) ToStockEntity() *entities.Stock {
-	return &entities.Stock{
-		ProductId: s.ProductId,
-		Quantity:  s.Quantity,
-	}
-}
-
-func ToStockJson(p entities.Stock) OutgoingStock {
-	return OutgoingStock{
-		ProductId: p.ProductId,
-		Quantity:  p.Quantity,
-	}
-}
-
-func IncomingStock(s *entities.Stock) IncomingStockJson {
-	return IncomingStockJson{
+func StockToStockRes(s *entities.Stock) *RespondStock {
+	return &RespondStock{
 		ProductId: s.ProductId,
 		Quantity:  s.Quantity,
 	}

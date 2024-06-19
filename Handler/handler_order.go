@@ -17,7 +17,7 @@ func NewOrderHandler(orderUseCase Usecase.OrderUseCaseI) OrderHandlerI {
 }
 
 func (h *OrderHandler) CreateOrder(c *fiber.Ctx) error {
-	orderPayload := new(payload.IncomingOrder)
+	orderPayload := new(payload.RequestOrder)
 	if err := c.BodyParser(orderPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}

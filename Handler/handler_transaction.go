@@ -15,11 +15,11 @@ func NewTransactionHandler(u Usecase.TransactionUseCaseI) TransactionHandlerI {
 }
 
 func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
-	transactionPayload := new(payload.IncomingTransaction)
+	transactionPayload := new(payload.RequestTransaction)
 	if err := c.BodyParser(transactionPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	transaction := transactionPayload.ToEntityTransaction()
+	transaction := transactionPayload.ToTransaction()
 	if !transaction.IsValidCountry(transaction.OrderAddress) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Dont have this country"})
 	}

@@ -2,7 +2,6 @@ package Usecase
 
 import (
 	"awesomeProject/Repo"
-	"awesomeProject/entities"
 	"awesomeProject/payload"
 )
 
@@ -14,20 +13,37 @@ func NewProductUseCase(repo Repo.ProductRepoI) ProductUseCaseI {
 	return &ProductUseCase{repo: repo}
 }
 
-func (s *ProductUseCase) CreateProduct(product *entities.Product) error {
-	return s.repo.SaveCreateProduct(product)
+func (s *ProductUseCase) CreateProduct(product *payload.RequestProduct) error {
+	productEntity := product.ToProduct()
+	return s.repo.SaveCreateProduct(productEntity)
 }
 
-func (s *ProductUseCase) GetAllProducts() ([]payload.OutgoingProduct, error) {
-	return s.repo.SaveGetAllProduct()
+func (s *ProductUseCase) GetAllProducts() ([]*payload.RespondProduct, error) {
+
+	products, err := s.repo.SaveGetAllProduct()
+	if err != nil {
+		return nil, err
+	}
+	var ResProduct []*payload.RespondProduct
+	for _, product := range products {
+		ResProduct = append(ResProduct, payload.ProductToRespondProduct(product))
+	}
+	return ResProduct, nil
 }
 
-func (s *ProductUseCase) GetByIDProduct(id uint) (entities.Product, error) {
-	return s.repo.SaveGetByIDProduct(id)
+func (s *ProductUseCase) GetByIDProduct(id uint) (*payload.RespondProduct, error) {
+	product, err := s.repo.SaveGetByIDProduct(id)
+	if err != nil {
+		return nil, err
+	}
+	ResProduct := payload.ProductToRespondProduct(product)
+	return ResProduct, err
 }
 
-func (s *ProductUseCase) UpdateProduct(product *entities.Product, id uint) error {
-	return s.repo.SaveUpdateProduct(product, id)
+func (s *ProductUseCase) UpdateProduct(product *payload.RequestProduct, id uint) error {
+	productEntity := product.ToProduct()
+	productEntity.ProductId = id
+	return s.repo.SaveUpdateProduct(productEntity)
 }
 
 func (s *ProductUseCase) DeleteProduct(id uint) error {

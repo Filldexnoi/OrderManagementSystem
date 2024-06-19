@@ -2,9 +2,9 @@ package Repo
 
 import (
 	"awesomeProject/entities"
-	"awesomeProject/payload"
-	"errors"
+	"awesomeProject/models"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Stock struct {
@@ -16,34 +16,34 @@ func NewStock(db *gorm.DB) StockRepoI {
 }
 
 func (r *Stock) SaveCreateStock(stock *entities.Stock) error {
-	err := r.db.First(&entities.Product{}, stock.ProductId).Error
-	if err != nil {
-		return err
-	}
-
-	return r.db.Create(payload.IncomingStock(stock)).Error
+	stockGorm := models.StockToGormStock(stock)
+	stockGorm.CreatedAt = time.Now()
+	return r.db.Create(stockGorm).Error
 }
 
-func (r *Stock) SaveUpdateStock(stock *entities.Stock, id uint) error {
-	err := r.db.First(&entities.Product{}, id).Error
-	if err != nil {
-		return errors.New("dont have Stock this product")
-	}
-	return r.db.Model(&entities.Stock{}).Where("product_id = ?", id).Updates(payload.IncomingStock(stock)).Error
+func (r *Stock) SaveUpdateStock(stock *entities.Stock) error {
+	stockGorm := models.StockToGormStock(stock)
+	stockGorm.UpdatedAt = time.Now()
+	return r.db.Model(&models.Stock{}).Where("product_id = ?", stockGorm.ProductID).Updates(stockGorm).Error
 }
 
 func (r *Stock) SaveDeleteStock(id uint) error {
-	return r.db.Delete(&entities.Stock{}, id).Error
+	return r.db.Delete(&models.Stock{}, id).Error
 }
 
-func (r *Stock) SaveGetQtyAllProduct() ([]payload.OutgoingStock, error) {
-	var stocks []payload.OutgoingStock
-	err := r.db.Find(&stocks).Error
+func (r *Stock) SaveGetQtyAllProduct() ([]*entities.Stock, error) {
+	var stocksGorm []*models.Stock
+	err := r.db.Find(&stocksGorm).Error
+	var stocks []*entities.Stock
+	for _, stock := range stocksGorm {
+		stocks = append(stocks, stock.ToStock())
+	}
 	return stocks, err
 }
 
-func (r *Stock) SaveGetQtyByIDProduct(id uint) (entities.Stock, error) {
-	var stock entities.Stock
-	err := r.db.First(&stock, id).Error
+func (r *Stock) SaveGetQtyByIDProduct(id uint) (*entities.Stock, error) {
+	var stockGorm *models.Stock
+	err := r.db.First(&stockGorm, id).Error
+	stock := stockGorm.ToStock()
 	return stock, err
 }

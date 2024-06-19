@@ -15,11 +15,11 @@ func NewProductHandler(UseCase Usecase.ProductUseCaseI) ProductHandlerI {
 }
 
 func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
-	product := new(payload.IncomingProduct)
+	product := new(payload.RequestProduct)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err := h.UseCase.CreateProduct(product.ToProduct())
+	err := h.UseCase.CreateProduct(product)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -31,7 +31,6 @@ func (h *ProductHandler) GetAllProducts(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-
 	return c.JSON(products)
 }
 
@@ -44,7 +43,7 @@ func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(payload.ToOutgoingProduct(product))
+	return c.JSON(product)
 }
 
 func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
@@ -52,11 +51,11 @@ func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid product ID"})
 	}
-	product := new(payload.IncomingProduct)
+	product := new(payload.RequestProduct)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err = h.UseCase.UpdateProduct(product.ToProduct(), uint(id))
+	err = h.UseCase.UpdateProduct(product, uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

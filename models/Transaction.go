@@ -30,8 +30,8 @@ func (Item) TableName() string {
 	return "items"
 }
 
-func (t Transaction) ToTransaction() entities.Transaction {
-	return entities.Transaction{
+func (t Transaction) ToTransaction() *entities.Transaction {
+	return &entities.Transaction{
 		TransactionId: t.TransactionID,
 		OrderAddress:  t.OrderAddress,
 		Items:         t.ToItems(),

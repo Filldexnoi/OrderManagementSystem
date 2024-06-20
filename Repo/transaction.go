@@ -16,6 +16,15 @@ func NewTransactionRepo(db *gorm.DB) TransactionRepoI {
 
 func (r *TransactionRepo) SaveCreateTransaction(transaction *entities.Transaction) error {
 	TransactionGorm := models.TransactionToGormTransaction(transaction)
-	err := r.db.Create(&TransactionGorm).Error
-	return err
+	return r.db.Create(&TransactionGorm).Error
+}
+
+func (r *TransactionRepo) SaveGetAllTransaction() ([]*entities.Transaction, error) {
+	var TransactionsGorm []models.Transaction
+	err := r.db.Model(&models.Transaction{}).Preload("Items.Product").Find(&TransactionsGorm).Error
+	var transaction []*entities.Transaction
+	for _, t := range TransactionsGorm {
+		transaction = append(transaction, t.ToTransaction())
+	}
+	return transaction, err
 }

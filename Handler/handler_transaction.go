@@ -25,3 +25,11 @@ func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusCreated).JSON(transactionPayload)
 }
+
+func (h *TransactionHandler) GetAllTransactions(c *fiber.Ctx) error {
+	Transactions, err := h.UseCase.GetAllTransaction()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(Transactions)
+}

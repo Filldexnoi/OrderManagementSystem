@@ -5,8 +5,12 @@ import (
 	"github.com/google/uuid"
 )
 
-type RequestOrder struct {
+type RequestCreateOrder struct {
 	TransactionId uuid.UUID `json:"transaction_id"`
+}
+
+type RequestUpdateStatusOrder struct {
+	Status string `json:"status"`
 }
 
 type ResponseOrder struct {
@@ -15,8 +19,22 @@ type ResponseOrder struct {
 	Status        string    `json:"status"`
 }
 
-func (p *RequestOrder) ToOrder() *entities.Order {
+func (p *RequestCreateOrder) ToOrder() *entities.Order {
 	return &entities.Order{
 		TransactionId: p.TransactionId,
+	}
+}
+
+func (p *RequestUpdateStatusOrder) ToOrder() *entities.Order {
+	return &entities.Order{
+		Status: p.Status,
+	}
+}
+
+func OrderToOrderRespond(order *entities.Order) *ResponseOrder {
+	return &ResponseOrder{
+		OrderId:       order.OrderId,
+		TransactionId: order.TransactionId,
+		Status:        order.Status,
 	}
 }

@@ -22,9 +22,11 @@ func (s *FiberServer) SetupFiberRoute(UseCase *Usecase.UseCase) {
 	s.app.Delete("/stock/:id", stockHandler.DeleteStock)
 
 	TransactionHandler := Handler.NewTransactionHandler(UseCase.Transaction)
-	s.app.Post("/transaction", TransactionHandler.CreateTransaction)
-	s.app.Get("/transactions", TransactionHandler.GetAllTransactions)
+	s.app.Post("/order/calculate", TransactionHandler.CreateTransaction)
+	s.app.Get("/order/calculate", TransactionHandler.GetAllTransactions)
 
 	OrderHandler := Handler.NewOrderHandler(UseCase.Order)
 	s.app.Post("/order", OrderHandler.CreateOrder)
+	s.app.Patch("/order/status/:id", OrderHandler.UpdateOrderStatus)
+	s.app.Get("/orders", OrderHandler.GetAllOrders)
 }

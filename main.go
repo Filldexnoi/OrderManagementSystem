@@ -27,7 +27,7 @@ func main() {
 	transactionRepo := Repo.NewTransactionRepo(db.SQL)
 	UseCase.Transaction = Usecase.NewTransactionUseCase(transactionRepo, productRepo)
 	orderRepo := Repo.NewOrderRepo(db.SQL)
-	UseCase.Order = Usecase.NewOrderUseCase(orderRepo)
+	UseCase.Order = Usecase.NewOrderUseCase(orderRepo, stockRepo, transactionRepo)
 	s := server.NewFiberServer()
 	s.SetupFiberRoute(UseCase)
 	if err := s.Start(cfg.PORT); err != nil {

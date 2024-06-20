@@ -11,7 +11,7 @@ type Product struct {
 	ProductName      string    `gorm:"column:product_name"`
 	ProductPrice     float64   `gorm:"column:product_price"`
 	ProductCreatedAt time.Time `gorm:"autoCreateTime"`
-	ProductUpdatedAt time.Time `gorm:"autoCreateTime"`
+	ProductUpdatedAt time.Time `gorm:"autoUpdateTime"`
 	Stock            Stock
 	Item             Item
 }

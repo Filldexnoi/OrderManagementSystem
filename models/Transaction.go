@@ -13,6 +13,7 @@ type Transaction struct {
 	TotalPrice    float64   `gorm:"column:total_price"`
 	CreatedAt     time.Time `gorm:"autoCreateTime"`
 	UpdatedAt     time.Time `gorm:"autoUpdateTime"`
+	Order         Order
 }
 
 type Item struct {

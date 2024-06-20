@@ -2,19 +2,32 @@ package Usecase
 
 import (
 	"awesomeProject/Repo"
-	"awesomeProject/entities"
+	"awesomeProject/payload"
 )
 
 type OrderUseCase struct {
-	Repo Repo.OrderRepoI
+	OrderRepo       Repo.OrderRepoI
+	StockRepo       Repo.StockRepoI
+	TransactionRepo Repo.TransactionRepoI
 }
 
-func NewOrderUseCase(repo Repo.OrderRepoI) OrderUseCaseI {
+func NewOrderUseCase(o Repo.OrderRepoI, s Repo.StockRepoI, t Repo.TransactionRepoI) OrderUseCaseI {
 	return &OrderUseCase{
-		Repo: repo,
+		OrderRepo:       o,
+		StockRepo:       s,
+		TransactionRepo: t,
 	}
 }
 
-func (u *OrderUseCase) CreateOrder(order entities.Order) error {
-	return u.Repo.SaveCreateOrder(order)
+func (u *OrderUseCase) CreateOrder(order *payload.RequestOrder) error {
+	orderEntity := order.ToOrder()
+	transaction, err := u.TransactionRepo.GetTransactionToCreateOrder(orderEntity)
+	if err != nil {
+		return err
+	}
+	err = u.StockRepo.CheckStockToCreateOrder(transaction)
+	if err != nil {
+		return err
+	}
+	return u.OrderRepo.SaveCreateOrder(orderEntity)
 }

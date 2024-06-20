@@ -1,7 +1,9 @@
 package Usecase
 
-import "awesomeProject/entities"
+import (
+	"awesomeProject/payload"
+)
 
 type OrderUseCaseI interface {
-	CreateOrder(order entities.Order) error
+	CreateOrder(order *payload.RequestOrder) error
 }

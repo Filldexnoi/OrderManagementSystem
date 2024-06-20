@@ -47,3 +47,14 @@ func (r *Stock) SaveGetQtyByIDProduct(id uint) (*entities.Stock, error) {
 	stock := stockGorm.ToStock()
 	return stock, err
 }
+
+func (r *Stock) CheckStockToCreateOrder(transaction *entities.Transaction) error {
+	for _, item := range transaction.Items {
+		err := r.db.Model(&models.Stock{}).Where("product_id = ? AND quantity >= ?", item.ProductId, item.Quantity).
+			Update("quantity", gorm.Expr("quantity - ?", item.Quantity)).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

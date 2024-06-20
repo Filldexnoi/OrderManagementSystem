@@ -1,6 +1,9 @@
 package entities
 
+import "github.com/google/uuid"
+
 type Order struct {
-	TransactionId uint
+	OrderId       uuid.UUID
+	TransactionId uuid.UUID
 	Status        string
 }

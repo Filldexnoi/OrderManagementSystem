@@ -21,8 +21,7 @@ func (h *OrderHandler) CreateOrder(c *fiber.Ctx) error {
 	if err := c.BodyParser(orderPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	order := orderPayload.ToEntityOrder()
-	err := h.UseCase.CreateOrder(order)
+	err := h.UseCase.CreateOrder(orderPayload)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

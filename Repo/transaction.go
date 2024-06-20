@@ -28,3 +28,14 @@ func (r *TransactionRepo) SaveGetAllTransaction() ([]*entities.Transaction, erro
 	}
 	return transaction, err
 }
+
+func (r *TransactionRepo) GetTransactionToCreateOrder(order *entities.Order) (*entities.Transaction, error) {
+	var transaction models.Transaction
+	err := r.db.Model(&models.Transaction{}).Where("transaction_id = ?", order.TransactionId).
+		Preload("Items.Product").First(&transaction).Error
+	if err != nil {
+		return nil, err
+	}
+	transactionEntity := transaction.ToTransaction()
+	return transactionEntity, err
+}

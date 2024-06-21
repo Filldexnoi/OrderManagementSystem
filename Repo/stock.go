@@ -3,6 +3,8 @@ package Repo
 import (
 	"awesomeProject/entities"
 	"awesomeProject/models"
+	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -49,12 +51,19 @@ func (r *Stock) SaveGetQtyByIDProduct(id uint) (*entities.Stock, error) {
 }
 
 func (r *Stock) CheckStockToCreateOrder(transaction *entities.Transaction) error {
-	for _, item := range transaction.Items {
-		err := r.db.Model(&models.Stock{}).Where("product_id = ? AND quantity >= ?", item.ProductId, item.Quantity).
-			Update("quantity", gorm.Expr("quantity - ?", item.Quantity)).Error
-		if err != nil {
-			return err
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		for _, item := range transaction.Items {
+			result := tx.Model(&models.Stock{}).Where("product_id = ? AND quantity >= ?", item.ProductId, item.Quantity).
+				Update("quantity", gorm.Expr("quantity - ?", item.Quantity))
+			if result.Error != nil {
+				return result.Error
+			}
+
+			if result.RowsAffected == 0 {
+				return errors.New(fmt.Sprintf("ไม่สามารถลดจำนวนสินค้าได้เนื่องจากสินค้า ID %d มีจำนวนในสต็อกไม่เพียงพอ", item.ProductId))
+			}
+
 		}
-	}
-	return nil
+		return nil
+	})
 }

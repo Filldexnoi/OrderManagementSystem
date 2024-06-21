@@ -19,15 +19,8 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	UseCase := new(Usecase.UseCase)
-	productRepo := Repo.NewProductRepo(db.SQL)
-	UseCase.Product = Usecase.NewProductUseCase(productRepo)
-	stockRepo := Repo.NewStock(db.SQL)
-	UseCase.Stock = Usecase.NewStockUseCase(stockRepo)
-	transactionRepo := Repo.NewTransactionRepo(db.SQL)
-	UseCase.Transaction = Usecase.NewTransactionUseCase(transactionRepo, productRepo)
-	orderRepo := Repo.NewOrderRepo(db.SQL)
-	UseCase.Order = Usecase.NewOrderUseCase(orderRepo, stockRepo, transactionRepo)
+	Repository := Repo.NewGormRepo(db.SQL)
+	UseCase := Usecase.NewUseCase(Repository)
 	s := server.NewFiberServer()
 	s.SetupFiberRoute(UseCase)
 	if err := s.Start(cfg.PORT); err != nil {

@@ -2,7 +2,7 @@ package Usecase
 
 import (
 	"awesomeProject/Repo"
-	"awesomeProject/payload"
+	"awesomeProject/entities"
 	"errors"
 )
 
@@ -18,19 +18,18 @@ func NewTransactionUseCase(TRepo Repo.TransactionRepoI, PRepo Repo.ProductRepoI)
 	}
 }
 
-func (u *TransactionUseCase) CreateTransaction(ReqTransaction *payload.RequestTransaction) error {
-	transactionEntity := ReqTransaction.ToTransaction()
-	if !transactionEntity.IsValidCountry(transactionEntity.OrderAddress) {
+func (u *TransactionUseCase) CreateTransaction(Transaction *entities.Transaction) error {
+	if !Transaction.IsValidCountry(Transaction.OrderAddress) {
 		return errors.New("dont have this country")
 	}
 	seen := make(map[uint]bool)
-	for _, item := range transactionEntity.Items {
+	for _, item := range Transaction.Items {
 		if seen[item.ProductId] {
-			return errors.New("duplicate product_id found")
+			return errors.New("duplicate product_id")
 		}
 		seen[item.ProductId] = true
 	}
-	transaction, err := u.ProductRepo.GetPriceProducts(transactionEntity)
+	transaction, err := u.ProductRepo.GetPriceProducts(Transaction)
 	if err != nil {
 		return err
 	}
@@ -38,14 +37,10 @@ func (u *TransactionUseCase) CreateTransaction(ReqTransaction *payload.RequestTr
 	return u.TransactionRepo.SaveCreateTransaction(transaction)
 }
 
-func (u *TransactionUseCase) GetAllTransaction() ([]*payload.RespondTransaction, error) {
+func (u *TransactionUseCase) GetAllTransaction() ([]*entities.Transaction, error) {
 	transactions, err := u.TransactionRepo.SaveGetAllTransaction()
 	if err != nil {
 		return nil, err
 	}
-	var ResTransaction []*payload.RespondTransaction
-	for _, transaction := range transactions {
-		ResTransaction = append(ResTransaction, payload.TransactionToResTransaction(transaction))
-	}
-	return ResTransaction, nil
+	return transactions, nil
 }

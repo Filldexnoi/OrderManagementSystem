@@ -19,7 +19,7 @@ func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err := h.UseCase.CreateProduct(product)
+	err := h.UseCase.CreateProduct(product.ToProduct())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -31,7 +31,11 @@ func (h *ProductHandler) GetAllProducts(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(products)
+	var ResProduct []*payload.RespondProduct
+	for _, product := range products {
+		ResProduct = append(ResProduct, payload.ProductToRespondProduct(product))
+	}
+	return c.JSON(ResProduct)
 }
 
 func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
@@ -43,7 +47,8 @@ func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(product)
+	ResProduct := payload.ProductToRespondProduct(product)
+	return c.JSON(ResProduct)
 }
 
 func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
@@ -55,7 +60,7 @@ func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err = h.UseCase.UpdateProduct(product, uint(id))
+	err = h.UseCase.UpdateProduct(product.ToProduct(), uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

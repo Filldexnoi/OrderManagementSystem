@@ -19,7 +19,7 @@ func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
 	if err := c.BodyParser(transactionPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err := h.UseCase.CreateTransaction(transactionPayload)
+	err := h.UseCase.CreateTransaction(transactionPayload.ToTransaction())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -31,5 +31,9 @@ func (h *TransactionHandler) GetAllTransactions(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(Transactions)
+	var ResTransaction []*payload.RespondTransaction
+	for _, transaction := range Transactions {
+		ResTransaction = append(ResTransaction, payload.TransactionToResTransaction(transaction))
+	}
+	return c.JSON(ResTransaction)
 }

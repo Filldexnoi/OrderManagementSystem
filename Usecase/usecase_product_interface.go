@@ -1,13 +1,13 @@
 package Usecase
 
 import (
-	"awesomeProject/payload"
+	"awesomeProject/entities"
 )
 
 type ProductUseCaseI interface {
-	CreateProduct(product *payload.RequestProduct) error
-	GetAllProducts() ([]*payload.RespondProduct, error)
-	GetByIDProduct(id uint) (*payload.RespondProduct, error)
-	UpdateProduct(product *payload.RequestProduct, id uint) error
+	CreateProduct(product *entities.Product) error
+	GetAllProducts() ([]*entities.Product, error)
+	GetByIDProduct(id uint) (*entities.Product, error)
+	UpdateProduct(product *entities.Product, id uint) error
 	DeleteProduct(id uint) error
 }

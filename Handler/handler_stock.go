@@ -19,7 +19,7 @@ func (h *StockHandler) CreateStock(c *fiber.Ctx) error {
 	if err := c.BodyParser(stock); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err := h.UseCase.CreateStock(stock)
+	err := h.UseCase.CreateStock(stock.ToStock())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -31,7 +31,11 @@ func (h *StockHandler) GetAllQtyProducts(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(stocks)
+	var ResStocks []*payload.RespondStock
+	for _, stock := range stocks {
+		ResStocks = append(ResStocks, payload.StockToStockRes(stock))
+	}
+	return c.JSON(ResStocks)
 }
 
 func (h *StockHandler) GetQtyProductByID(c *fiber.Ctx) error {
@@ -43,7 +47,8 @@ func (h *StockHandler) GetQtyProductByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(stock)
+	ResStock := payload.StockToStockRes(stock)
+	return c.JSON(ResStock)
 }
 
 func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
@@ -55,7 +60,7 @@ func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
 	if err := c.BodyParser(stock); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err = h.UseCase.UpdateStock(stock, uint(id))
+	err = h.UseCase.UpdateStock(stock.ToStock(), uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

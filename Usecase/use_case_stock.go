@@ -2,7 +2,7 @@ package Usecase
 
 import (
 	"awesomeProject/Repo"
-	"awesomeProject/payload"
+	"awesomeProject/entities"
 )
 
 type StockUseCase struct {
@@ -13,38 +13,31 @@ func NewStockUseCase(repo Repo.StockRepoI) StockUseCaseI {
 	return &StockUseCase{repo: repo}
 }
 
-func (s *StockUseCase) CreateStock(stock *payload.RequestStock) error {
-	stockEntity := stock.ToStock()
-	return s.repo.SaveCreateStock(stockEntity)
+func (s *StockUseCase) CreateStock(stock *entities.Stock) error {
+	return s.repo.SaveCreateStock(stock)
 }
 
-func (s *StockUseCase) UpdateStock(stock *payload.RequestStock, id uint) error {
-	stockEntity := stock.ToStock()
-	stockEntity.ProductId = id
-	return s.repo.SaveUpdateStock(stockEntity)
+func (s *StockUseCase) UpdateStock(stock *entities.Stock, id uint) error {
+	stock.ProductId = id
+	return s.repo.SaveUpdateStock(stock)
 }
 
 func (s *StockUseCase) DeleteStock(id uint) error {
 	return s.repo.SaveDeleteStock(id)
 }
 
-func (s *StockUseCase) GetQtyAllProduct() ([]*payload.RespondStock, error) {
+func (s *StockUseCase) GetQtyAllProduct() ([]*entities.Stock, error) {
 	stocks, err := s.repo.SaveGetQtyAllProduct()
 	if err != nil {
 		return nil, err
 	}
-	var ResStocks []*payload.RespondStock
-	for _, stock := range stocks {
-		ResStocks = append(ResStocks, payload.StockToStockRes(stock))
-	}
-	return ResStocks, nil
+	return stocks, nil
 }
 
-func (s *StockUseCase) GetQtyByIDProduct(id uint) (*payload.RespondStock, error) {
+func (s *StockUseCase) GetQtyByIDProduct(id uint) (*entities.Stock, error) {
 	stock, err := s.repo.SaveGetQtyByIDProduct(id)
 	if err != nil {
 		return nil, err
 	}
-	ResStock := payload.StockToStockRes(stock)
-	return ResStock, err
+	return stock, err
 }

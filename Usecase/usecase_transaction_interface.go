@@ -1,10 +1,10 @@
 package Usecase
 
 import (
-	"awesomeProject/payload"
+	"awesomeProject/entities"
 )
 
 type TransactionUseCaseI interface {
-	CreateTransaction(transaction *payload.RequestTransaction) error
-	GetAllTransaction() ([]*payload.RespondTransaction, error)
+	CreateTransaction(transaction *entities.Transaction) error
+	GetAllTransaction() ([]*entities.Transaction, error)
 }

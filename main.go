@@ -7,6 +7,7 @@ import (
 	"awesomeProject/database"
 	"awesomeProject/server"
 	"log"
+	"os"
 )
 
 func main() {
@@ -21,9 +22,18 @@ func main() {
 	}
 	Repository := Repo.NewGormRepo(db.SQL)
 	UseCase := Usecase.NewUseCase(Repository)
+
+	logFile := server.SetUpLogger()
+	defer func(logFile *os.File) {
+		err := logFile.Close()
+		if err != nil {
+
+		}
+	}(logFile)
+
 	s := server.NewFiberServer()
 	s.SetupFiberRoute(UseCase)
-	if err := s.Start(cfg.PORT); err != nil {
+	if err := s.Start(cfg.PORT, logFile); err != nil {
 		log.Fatal(err)
 	}
 }

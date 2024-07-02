@@ -1,13 +1,13 @@
 package Usecase
 
 import (
-	"awesomeProject/payload"
+	"awesomeProject/entities"
 )
 
 type StockUseCaseI interface {
-	CreateStock(stock *payload.RequestStock) error
-	GetQtyAllProduct() ([]*payload.RespondStock, error)
-	GetQtyByIDProduct(id uint) (*payload.RespondStock, error)
-	UpdateStock(stock *payload.RequestStock, id uint) error
+	CreateStock(stock *entities.Stock) error
+	GetQtyAllProduct() ([]*entities.Stock, error)
+	GetQtyByIDProduct(id uint) (*entities.Stock, error)
+	UpdateStock(stock *entities.Stock, id uint) error
 	DeleteStock(id uint) error
 }

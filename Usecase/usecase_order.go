@@ -2,7 +2,7 @@ package Usecase
 
 import (
 	"awesomeProject/Repo"
-	"awesomeProject/payload"
+	"awesomeProject/entities"
 	"github.com/google/uuid"
 )
 
@@ -20,9 +20,8 @@ func NewOrderUseCase(o Repo.OrderRepoI, s Repo.StockRepoI, t Repo.TransactionRep
 	}
 }
 
-func (u *OrderUseCase) CreateOrder(o *payload.RequestCreateOrder) error {
-	orderEntity := o.ToOrder()
-	transaction, err := u.TransactionRepo.GetTransactionToCreateOrder(orderEntity)
+func (u *OrderUseCase) CreateOrder(o *entities.Order) error {
+	transaction, err := u.TransactionRepo.GetTransactionToCreateOrder(o)
 	if err != nil {
 		return err
 	}
@@ -30,14 +29,14 @@ func (u *OrderUseCase) CreateOrder(o *payload.RequestCreateOrder) error {
 	if err != nil {
 		return err
 	}
-	order, err := orderEntity.InitStatus()
+	order, err := o.InitStatus()
 	if err != nil {
 		return err
 	}
 	return u.OrderRepo.SaveCreateOrder(order)
 }
 
-func (u *OrderUseCase) UpdateStatusOrder(o *payload.RequestUpdateStatusOrder, id uuid.UUID) error {
+func (u *OrderUseCase) UpdateStatusOrder(o *entities.Order, id uuid.UUID) error {
 	order, err := u.OrderRepo.GetOrderForUpdateStatus(id)
 	if err != nil {
 		return err
@@ -49,14 +48,10 @@ func (u *OrderUseCase) UpdateStatusOrder(o *payload.RequestUpdateStatusOrder, id
 	return u.OrderRepo.SaveUpdateStatusOrder(newStatusOrder)
 }
 
-func (u *OrderUseCase) GetAllOrders() ([]*payload.ResponseOrder, error) {
+func (u *OrderUseCase) GetAllOrders() ([]*entities.Order, error) {
 	orders, err := u.OrderRepo.SaveGetAllOrders()
 	if err != nil {
 		return nil, err
 	}
-	var ResOrders []*payload.ResponseOrder
-	for _, order := range orders {
-		ResOrders = append(ResOrders, payload.OrderToOrderRespond(order))
-	}
-	return ResOrders, nil
+	return orders, nil
 }

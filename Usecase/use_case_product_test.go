@@ -2,6 +2,7 @@ package Usecase
 
 import (
 	"awesomeProject/entities"
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -53,6 +54,22 @@ func TestProductUseCase_CreateProduct(t *testing.T) {
 			})
 		assert.NoError(t, err)
 	})
+
+	t.Run("Cannot create product", func(t *testing.T) {
+		repo := &mockProductRepo{
+			SaveCreateProductFunc: func(product *entities.Product) error {
+				return errors.New("cannot create product")
+			},
+		}
+		service := NewProductUseCase(repo)
+		err := service.CreateProduct(&entities.Product{
+			ProductTypes: "Shirt",
+			ProductName:  "Long Shirt",
+			ProductPrice: 999,
+		})
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot create product")
+	})
 }
 
 func TestProductUseCase_GetAllProducts(t *testing.T) {
@@ -66,6 +83,18 @@ func TestProductUseCase_GetAllProducts(t *testing.T) {
 
 		_, err := service.GetAllProducts()
 		assert.NoError(t, err)
+	})
+
+	t.Run("Cannot get all products", func(t *testing.T) {
+		repo := &mockProductRepo{
+			SaveGetAllProductFunc: func() ([]*entities.Product, error) {
+				return nil, errors.New("cannot get all products")
+			},
+		}
+		service := NewProductUseCase(repo)
+		_, err := service.GetAllProducts()
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot get all products")
 	})
 }
 
@@ -81,6 +110,18 @@ func TestProductUseCase_GetByIDProduct(t *testing.T) {
 		_, err := service.GetByIDProduct(5)
 		assert.NoError(t, err)
 	})
+
+	t.Run("Cannot get product by id", func(t *testing.T) {
+		repo := &mockProductRepo{
+			SaveGetByIDProductFunc: func(id uint) (*entities.Product, error) {
+				return nil, errors.New("cannot get product by id")
+			},
+		}
+		service := NewProductUseCase(repo)
+		_, err := service.GetByIDProduct(5)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot get product by id")
+	})
 }
 
 func TestProductUseCase_UpdateProduct(t *testing.T) {
@@ -91,7 +132,6 @@ func TestProductUseCase_UpdateProduct(t *testing.T) {
 			},
 		}
 		service := NewProductUseCase(repo)
-
 		err := service.UpdateProduct(
 			&entities.Product{
 				ProductTypes: "Shirt",
@@ -101,22 +141,20 @@ func TestProductUseCase_UpdateProduct(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
-	t.Run("Price Product is negative", func(t *testing.T) {
+	t.Run("Cannot update product", func(t *testing.T) {
 		repo := &mockProductRepo{
 			SaveUpdateProductFunc: func(product *entities.Product) error {
-				return nil
+				return errors.New("cannot update product")
 			},
 		}
 		service := NewProductUseCase(repo)
-
-		err := service.CreateProduct(
-			&entities.Product{
-				ProductTypes: "Shirt",
-				ProductName:  "Long Shirt",
-				ProductPrice: -999,
-			})
+		err := service.UpdateProduct(&entities.Product{
+			ProductTypes: "Shirt",
+			ProductName:  "Long Shirt",
+			ProductPrice: 999,
+		}, 5)
 		assert.Error(t, err)
-		assert.Equal(t, "product price must be not negative", err.Error())
+		assert.EqualError(t, err, "cannot update product")
 	})
 }
 
@@ -130,5 +168,17 @@ func TestProductUseCase_DeleteProduct(t *testing.T) {
 		service := NewProductUseCase(repo)
 		err := service.DeleteProduct(5)
 		assert.NoError(t, err)
+	})
+
+	t.Run("Cannot delete product", func(t *testing.T) {
+		repo := &mockProductRepo{
+			SaveDeleteProductFunc: func(id uint) error {
+				return errors.New("cannot delete product")
+			},
+		}
+		service := NewProductUseCase(repo)
+		err := service.DeleteProduct(5)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot delete product")
 	})
 }

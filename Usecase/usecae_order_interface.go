@@ -1,12 +1,12 @@
 package Usecase
 
 import (
-	"awesomeProject/payload"
+	"awesomeProject/entities"
 	"github.com/google/uuid"
 )
 
 type OrderUseCaseI interface {
-	CreateOrder(order *payload.RequestCreateOrder) error
-	UpdateStatusOrder(o *payload.RequestUpdateStatusOrder, id uuid.UUID) error
-	GetAllOrders() ([]*payload.ResponseOrder, error)
+	CreateOrder(order *entities.Order) error
+	UpdateStatusOrder(o *entities.Order, id uuid.UUID) error
+	GetAllOrders() ([]*entities.Order, error)
 }

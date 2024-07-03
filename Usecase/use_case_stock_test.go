@@ -2,6 +2,7 @@ package Usecase
 
 import (
 	"awesomeProject/entities"
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -50,6 +51,18 @@ func TestStockUseCase_CreateStock(t *testing.T) {
 			})
 		assert.NoError(t, err)
 	})
+
+	t.Run("Cannot CreateStock", func(t *testing.T) {
+		repo := &mockStockRepo{
+			SaveCreateStockFunc: func(stock *entities.Stock) error {
+				return errors.New("cannot create stock")
+			},
+		}
+		service := NewStockUseCase(repo)
+		err := service.CreateStock(&entities.Stock{})
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot create stock")
+	})
 }
 
 func TestStockUseCase_GetQtyAllProduct(t *testing.T) {
@@ -63,6 +76,18 @@ func TestStockUseCase_GetQtyAllProduct(t *testing.T) {
 		_, err := service.GetQtyAllProduct()
 		assert.NoError(t, err)
 	})
+
+	t.Run("Cannot GetQtyAllProduct", func(t *testing.T) {
+		repo := &mockStockRepo{
+			SaveGetQtyAllProductFunc: func() ([]*entities.Stock, error) {
+				return nil, errors.New("cannot get qty all product")
+			},
+		}
+		service := NewStockUseCase(repo)
+		_, err := service.GetQtyAllProduct()
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot get qty all product")
+	})
 }
 
 func TestStockUseCase_GetQtyByIDProduct(t *testing.T) {
@@ -75,6 +100,18 @@ func TestStockUseCase_GetQtyByIDProduct(t *testing.T) {
 		service := NewStockUseCase(repo)
 		_, err := service.GetQtyByIDProduct(5)
 		assert.NoError(t, err)
+	})
+
+	t.Run("Cannot GetQtyByIDProduct", func(t *testing.T) {
+		repo := &mockStockRepo{
+			SaveGetQtyByIDProductFunc: func(id uint) (*entities.Stock, error) {
+				return nil, errors.New("cannot get qty product")
+			},
+		}
+		service := NewStockUseCase(repo)
+		_, err := service.GetQtyByIDProduct(5)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot get qty product")
 	})
 }
 
@@ -92,6 +129,18 @@ func TestStockUseCase_UpdateStock(t *testing.T) {
 			}, 5)
 		assert.NoError(t, err)
 	})
+
+	t.Run("Cannot UpdateStock", func(t *testing.T) {
+		repo := &mockStockRepo{
+			SaveUpdateStockFunc: func(stock *entities.Stock) error {
+				return errors.New("cannot update stock")
+			},
+		}
+		service := NewStockUseCase(repo)
+		err := service.UpdateStock(&entities.Stock{}, 10)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot update stock")
+	})
 }
 
 func TestStockUseCase_DeleteStock(t *testing.T) {
@@ -104,5 +153,16 @@ func TestStockUseCase_DeleteStock(t *testing.T) {
 		service := NewStockUseCase(repo)
 		err := service.DeleteStock(5)
 		assert.NoError(t, err)
+	})
+	t.Run("Cannot DeleteStock", func(t *testing.T) {
+		repo := &mockStockRepo{
+			SaveDeleteStockFunc: func(id uint) error {
+				return errors.New("cannot delete stock")
+			},
+		}
+		service := NewStockUseCase(repo)
+		err := service.DeleteStock(5)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "cannot delete stock")
 	})
 }

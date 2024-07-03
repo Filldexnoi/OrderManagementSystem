@@ -3,7 +3,6 @@ package Usecase
 import (
 	"awesomeProject/Repo"
 	"awesomeProject/entities"
-	"errors"
 )
 
 type ProductUseCase struct {
@@ -36,9 +35,6 @@ func (s *ProductUseCase) GetByIDProduct(id uint) (*entities.Product, error) {
 
 func (s *ProductUseCase) UpdateProduct(product *entities.Product, id uint) error {
 	product.ProductId = id
-	if product.ProductPrice < 0 {
-		return errors.New("product price must be not negative")
-	}
 	return s.repo.SaveUpdateProduct(product)
 }
 

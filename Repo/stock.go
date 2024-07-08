@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Stock struct {
@@ -17,20 +16,37 @@ func NewStock(db *gorm.DB) StockRepoI {
 	return &Stock{db: db}
 }
 
-func (r *Stock) SaveCreateStock(stock *entities.Stock) error {
-	stockGorm := models.StockToGormStock(stock)
-	stockGorm.CreatedAt = time.Now()
-	return r.db.Create(stockGorm).Error
+func (r *Stock) SaveCreateStock(stock *entities.Stock) (*entities.Stock, error) {
+	createStock := models.StockToGormStock(stock)
+	err := r.db.Create(&createStock).Error
+	if err != nil {
+		return nil, err
+	}
+	stockEntity := createStock.ToStock()
+	return stockEntity, nil
 }
 
-func (r *Stock) SaveUpdateStock(stock *entities.Stock) error {
-	stockGorm := models.StockToGormStock(stock)
-	stockGorm.UpdatedAt = time.Now()
-	return r.db.Model(&models.Stock{}).Where("product_id = ?", stockGorm.ProductID).Updates(stockGorm).Error
+func (r *Stock) SaveUpdateStock(stock *entities.Stock) (*entities.Stock, error) {
+	updateStock := models.StockToGormStock(stock)
+	err := r.db.Model(&models.Stock{}).Where("product_id = ?", updateStock.ProductID).Updates(&updateStock).Error
+	if err != nil {
+		return nil, err
+	}
+	stockEntity := updateStock.ToStock()
+	return stockEntity, nil
 }
 
-func (r *Stock) SaveDeleteStock(id uint) error {
-	return r.db.Delete(&models.Stock{}, id).Error
+func (r *Stock) SaveDeleteStock(id uint) (*entities.Stock, error) {
+	var deleteStock models.Stock
+	if err := r.db.First(&deleteStock, id).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.db.Delete(&deleteStock, id).Error; err != nil {
+		return nil, err
+	}
+	stockEntity := deleteStock.ToStock()
+	return stockEntity, nil
 }
 
 func (r *Stock) SaveGetQtyAllProduct() ([]*entities.Stock, error) {
@@ -62,7 +78,6 @@ func (r *Stock) CheckStockToCreateOrder(transaction *entities.Transaction) error
 			if result.RowsAffected == 0 {
 				return errors.New(fmt.Sprintf("ไม่สามารถลดจำนวนสินค้าได้เนื่องจากสินค้า ID %d มีจำนวนในสต็อกไม่เพียงพอ", item.ProductId))
 			}
-
 		}
 		return nil
 	})

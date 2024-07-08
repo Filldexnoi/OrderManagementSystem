@@ -15,9 +15,14 @@ func NewOrderRepo(db *gorm.DB) OrderRepoI {
 	return &OrderRepo{DB: db}
 }
 
-func (r *OrderRepo) SaveCreateOrder(order *entities.Order) error {
-	orderGorm := models.OrderToGormOrder(order)
-	return r.DB.Create(&orderGorm).Error
+func (r *OrderRepo) SaveCreateOrder(order *entities.Order) (*entities.Order, error) {
+	createdOrder := models.OrderToGormOrder(order)
+	err := r.DB.Create(&createdOrder).Error
+	if err != nil {
+		return nil, err
+	}
+	orderEntity := createdOrder.ToOrder()
+	return orderEntity, nil
 }
 
 func (r *OrderRepo) GetOrderForUpdateStatus(id uuid.UUID) (*entities.Order, error) {
@@ -30,9 +35,14 @@ func (r *OrderRepo) GetOrderForUpdateStatus(id uuid.UUID) (*entities.Order, erro
 	return orderEntity, nil
 }
 
-func (r *OrderRepo) SaveUpdateStatusOrder(o *entities.Order) error {
-	orderGorm := models.OrderToGormOrder(o)
-	return r.DB.Save(&orderGorm).Error
+func (r *OrderRepo) SaveUpdateStatusOrder(o *entities.Order) (*entities.Order, error) {
+	updatedOrder := models.OrderToGormOrder(o)
+	err := r.DB.Save(&updatedOrder).Error
+	if err != nil {
+		return nil, err
+	}
+	orderEntity := updatedOrder.ToOrder()
+	return orderEntity, nil
 }
 
 func (r *OrderRepo) SaveGetAllOrders() ([]*entities.Order, error) {

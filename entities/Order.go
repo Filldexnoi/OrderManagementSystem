@@ -58,3 +58,17 @@ func (o *Order) InitStatus() (*Order, error) {
 
 	return o, fmt.Errorf("%w: from %s to %s", errors.New("invalid order status"), o.Status, "New")
 }
+
+func (o *Order) IsEqualCreatedOrder(createdOrder *Order) bool {
+	if o.TransactionId != createdOrder.TransactionId {
+		return false
+	}
+	return true
+}
+
+func (o *Order) IsEqualUpdatedOrder(updateOrder *Order) bool {
+	if o.OrderId != updateOrder.OrderId || o.Status != updateOrder.Status {
+		return false
+	}
+	return true
+}

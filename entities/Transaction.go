@@ -1,7 +1,9 @@
 package entities
 
 import (
+	"fmt"
 	"github.com/google/uuid"
+	"reflect"
 	"strings"
 )
 
@@ -288,4 +290,16 @@ func (t *Transaction) isWithinThailand(country string) bool {
 func (t *Transaction) IsValidCountry(country string) bool {
 	_, exists := validCountries[strings.ToLower(country)]
 	return exists
+}
+
+func (t *Transaction) IsEqualCreateTransaction(createTransaction *Transaction) bool {
+	if t.OrderAddress != createTransaction.OrderAddress {
+		fmt.Println("Address not equal")
+		return false
+	}
+	if reflect.DeepEqual(t.Items, createTransaction.Items) {
+		fmt.Println("Items not equal")
+		return false
+	}
+	return true
 }

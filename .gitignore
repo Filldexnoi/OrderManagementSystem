@@ -2,3 +2,16 @@
 .idea
 
 .env
+
+# Ignore specific files in MinIO system directories
+evaluate-loki/.data/minio/.minio.sys/buckets/.bloomcycle.bin/xl.meta
+evaluate-loki/.data/minio/.minio.sys/buckets/.usage-cache.bin.bkp/xl.meta
+evaluate-loki/.data/minio/.minio.sys/buckets/.usage-cache.bin/xl.meta
+evaluate-loki/.data/minio/.minio.sys/buckets/.usage.json/xl.meta
+evaluate-loki/.data/minio/.minio.sys/buckets/loki-data/.usage-cache.bin.bkp/xl.meta
+evaluate-loki/.data/minio/.minio.sys/buckets/loki-data/.usage-cache.bin/xl.meta
+evaluate-loki/.data/minio/.minio.sys/buckets/loki-ruler/.usage-cache.bin.bkp/xl.meta
+evaluate-loki/.data/minio/.minio.sys/buckets/loki-ruler/.usage-cache.bin/xl.meta
+
+# Ignore entire directory of tmp and trash in MinIO system directories
+evaluate-loki/.data/minio/.minio.sys/tmp/.trash/

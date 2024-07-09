@@ -3,7 +3,6 @@ package Usecase
 import (
 	"awesomeProject/Repo"
 	"awesomeProject/entities"
-	"errors"
 	"github.com/google/uuid"
 )
 
@@ -26,9 +25,6 @@ func (u *OrderUseCase) CreateOrder(o *entities.Order) (*entities.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	if transaction.TransactionId != o.TransactionId {
-		return nil, err
-	}
 	err = u.StockRepo.CheckStockToCreateOrder(transaction)
 	if err != nil {
 		return nil, err
@@ -41,18 +37,12 @@ func (u *OrderUseCase) CreateOrder(o *entities.Order) (*entities.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !o.IsEqualCreatedOrder(createdOrder) {
-		return nil, errors.New("order not equal to createdOrder")
-	}
 	return createdOrder, nil
 }
 
 func (u *OrderUseCase) UpdateStatusOrder(o *entities.Order, id uuid.UUID) (*entities.Order, error) {
 	order, err := u.OrderRepo.GetOrderForUpdateStatus(id)
 	if err != nil {
-		return nil, err
-	}
-	if order.OrderId != id {
 		return nil, err
 	}
 	newStatusOrder, err := order.ChangeStatus(o.Status)
@@ -62,9 +52,6 @@ func (u *OrderUseCase) UpdateStatusOrder(o *entities.Order, id uuid.UUID) (*enti
 	updatedOrder, err := u.OrderRepo.SaveUpdateStatusOrder(newStatusOrder)
 	if err != nil {
 		return nil, err
-	}
-	if !newStatusOrder.IsEqualUpdatedOrder(updatedOrder) {
-		return nil, errors.New("order not equal to updatedOrder")
 	}
 	return updatedOrder, nil
 }

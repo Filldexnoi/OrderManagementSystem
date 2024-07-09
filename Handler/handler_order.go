@@ -44,7 +44,7 @@ func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	ResOrder := payload.OrderToOrderRespond(order)
-	return c.JSON(ResOrder)
+	return c.Status(fiber.StatusOK).JSON(ResOrder)
 }
 
 func (h *OrderHandler) GetAllOrders(c *fiber.Ctx) error {
@@ -56,5 +56,5 @@ func (h *OrderHandler) GetAllOrders(c *fiber.Ctx) error {
 	for _, order := range orders {
 		ResOrders = append(ResOrders, payload.OrderToOrderRespond(order))
 	}
-	return c.JSON(ResOrders)
+	return c.Status(fiber.StatusOK).JSON(ResOrders)
 }

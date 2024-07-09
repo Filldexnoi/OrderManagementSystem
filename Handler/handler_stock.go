@@ -36,7 +36,7 @@ func (h *StockHandler) GetAllQtyProducts(c *fiber.Ctx) error {
 	for _, stock := range stocks {
 		ResStocks = append(ResStocks, payload.StockToStockRes(stock))
 	}
-	return c.JSON(ResStocks)
+	return c.Status(fiber.StatusOK).JSON(ResStocks)
 }
 
 func (h *StockHandler) GetQtyProductByID(c *fiber.Ctx) error {
@@ -49,7 +49,7 @@ func (h *StockHandler) GetQtyProductByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	ResStock := payload.StockToStockRes(stock)
-	return c.JSON(ResStock)
+	return c.Status(fiber.StatusOK).JSON(ResStock)
 }
 
 func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
@@ -66,7 +66,7 @@ func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	ResStock := payload.StockToStockRes(stockEntity)
-	return c.JSON(ResStock)
+	return c.Status(fiber.StatusOK).JSON(ResStock)
 }
 
 func (h *StockHandler) DeleteStock(c *fiber.Ctx) error {
@@ -79,5 +79,5 @@ func (h *StockHandler) DeleteStock(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 	ResStock := payload.StockToStockRes(stockEntity)
-	return c.JSON(ResStock)
+	return c.Status(fiber.StatusOK).JSON(ResStock)
 }

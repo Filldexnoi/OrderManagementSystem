@@ -38,9 +38,6 @@ func (u *TransactionUseCase) CreateTransaction(Transaction *entities.Transaction
 	if err != nil {
 		return nil, err
 	}
-	if !Transaction.IsEqualCreateTransaction(createdTransaction) {
-		return nil, errors.New("transaction not equal create transaction")
-	}
 	return createdTransaction, nil
 }
 

@@ -108,7 +108,7 @@ func TestOrderUseCase_UpdateStatus(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
-		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil)
+		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil).Once()
 		mockOrderRepo.On("SaveUpdateStatusOrder", order).Return(order, nil).Once()
 		result, err := service.UpdateStatusOrder(order, order.OrderId)
 		assert.NoError(t, err)
@@ -118,7 +118,7 @@ func TestOrderUseCase_UpdateStatus(t *testing.T) {
 	})
 
 	t.Run("cannot save update status", func(t *testing.T) {
-		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil)
+		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil).Once()
 		mockOrderRepo.On("SaveUpdateStatusOrder", order).Return(nil, errors.New("cannot save update status")).Once()
 		result, err := service.UpdateStatusOrder(order, order.OrderId)
 		assert.Error(t, err)

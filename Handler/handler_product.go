@@ -36,7 +36,7 @@ func (h *ProductHandler) GetAllProducts(c *fiber.Ctx) error {
 	for _, product := range products {
 		ResProduct = append(ResProduct, payload.ProductToRespondProduct(product))
 	}
-	return c.JSON(ResProduct)
+	return c.Status(fiber.StatusOK).JSON(ResProduct)
 }
 
 func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
@@ -49,7 +49,7 @@ func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 	ResProduct := payload.ProductToRespondProduct(product)
-	return c.JSON(ResProduct)
+	return c.Status(fiber.StatusOK).JSON(ResProduct)
 }
 
 func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
@@ -66,7 +66,7 @@ func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 	ResProduct := payload.ProductToRespondProduct(productEntity)
-	return c.JSON(ResProduct)
+	return c.Status(fiber.StatusOK).JSON(ResProduct)
 }
 
 func (h *ProductHandler) DeleteProduct(c *fiber.Ctx) error {
@@ -79,5 +79,5 @@ func (h *ProductHandler) DeleteProduct(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 	ResProduct := payload.ProductToRespondProduct(productEntity)
-	return c.JSON(ResProduct)
+	return c.Status(fiber.StatusOK).JSON(ResProduct)
 }

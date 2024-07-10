@@ -36,5 +36,5 @@ func (h *TransactionHandler) GetAllTransactions(c *fiber.Ctx) error {
 	for _, transaction := range Transactions {
 		ResTransaction = append(ResTransaction, payload.TransactionToResTransaction(transaction))
 	}
-	return c.JSON(ResTransaction)
+	return c.Status(fiber.StatusOK).JSON(ResTransaction)
 }

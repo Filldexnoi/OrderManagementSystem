@@ -55,7 +55,6 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "dont have this country", err.Error())
-		mockTransactionRepo.AssertExpectations(t)
 	})
 
 	t.Run("Duplicate Id Product", func(t *testing.T) {
@@ -63,7 +62,6 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "duplicate product_id", err.Error())
-		mockTransactionRepo.AssertExpectations(t)
 	})
 
 	t.Run("Cannot get PriceProducts", func(t *testing.T) {

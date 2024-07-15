@@ -18,7 +18,7 @@ func NewTransactionUseCase(TRepo Repo.TransactionRepoI, PRepo Repo.ProductRepoI)
 	}
 }
 
-func (u *TransactionUseCase) CreateTransaction(Transaction *entities.Transaction) (*entities.Transaction, error) {
+func (u *TransactionUseCase) CreateTransaction(Transaction entities.Transaction) (*entities.Transaction, error) {
 	if !Transaction.IsValidCountry(Transaction.OrderAddress) {
 		return nil, errors.New("dont have this country")
 	}
@@ -29,7 +29,7 @@ func (u *TransactionUseCase) CreateTransaction(Transaction *entities.Transaction
 		}
 		seen[item.ProductId] = true
 	}
-	transaction, err := u.ProductRepo.GetPriceProducts(Transaction)
+	transaction, err := u.ProductRepo.GetPriceProducts(&Transaction)
 	if err != nil {
 		return nil, err
 	}

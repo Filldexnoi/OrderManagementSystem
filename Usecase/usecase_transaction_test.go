@@ -13,7 +13,7 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 	mockProductRepo := new(Repo.ProductRepoMock)
 	mockTransactionRepo := new(Repo.TransactionRepoMock)
 	service := NewTransactionUseCase(mockTransactionRepo, mockProductRepo)
-	transaction := &entities.Transaction{
+	transaction := entities.Transaction{
 		TransactionId: uuid.New(),
 		OrderAddress:  "th",
 		Items: []entities.Item{
@@ -22,7 +22,7 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		},
 		TotalPrice: 1100,
 	}
-	transactionInvalidCountry := &entities.Transaction{
+	transactionInvalidCountry := entities.Transaction{
 		TransactionId: uuid.New(),
 		OrderAddress:  "xx",
 		Items: []entities.Item{
@@ -31,7 +31,7 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		},
 		TotalPrice: 1100,
 	}
-	transactionDuplicateIdProduct := &entities.Transaction{
+	transactionDuplicateIdProduct := entities.Transaction{
 		TransactionId: uuid.New(),
 		OrderAddress:  "th",
 		Items: []entities.Item{
@@ -41,12 +41,12 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		TotalPrice: 1100,
 	}
 	t.Run("success", func(t *testing.T) {
-		mockProductRepo.On("GetPriceProducts", transaction).Return(transaction, nil).Once()
-		mockTransactionRepo.On("SaveCreateTransaction", transaction).Return(transaction, nil).Once()
+		mockProductRepo.On("GetPriceProducts", &transaction).Return(&transaction, nil).Once()
+		mockTransactionRepo.On("SaveCreateTransaction", &transaction).Return(&transaction, nil).Once()
 		result, err := service.CreateTransaction(transaction)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, transaction, result)
+		assert.Equal(t, &transaction, result)
 		mockProductRepo.AssertExpectations(t)
 		mockTransactionRepo.AssertExpectations(t)
 	})
@@ -66,7 +66,7 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 	})
 
 	t.Run("Cannot get PriceProducts", func(t *testing.T) {
-		mockProductRepo.On("GetPriceProducts", transaction).Return(nil, errors.New("cannot get price products")).Once()
+		mockProductRepo.On("GetPriceProducts", &transaction).Return(nil, errors.New("cannot get price products")).Once()
 		result, err := service.CreateTransaction(transaction)
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -75,8 +75,8 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 	})
 
 	t.Run("Cannot create transaction", func(t *testing.T) {
-		mockProductRepo.On("GetPriceProducts", transaction).Return(transaction, nil).Once()
-		mockTransactionRepo.On("SaveCreateTransaction", transaction).Return(nil, errors.New("cannot create transaction")).Once()
+		mockProductRepo.On("GetPriceProducts", &transaction).Return(&transaction, nil).Once()
+		mockTransactionRepo.On("SaveCreateTransaction", &transaction).Return(nil, errors.New("cannot create transaction")).Once()
 		result, err := service.CreateTransaction(transaction)
 		assert.Error(t, err)
 		assert.Nil(t, result)

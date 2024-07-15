@@ -15,7 +15,7 @@ func NewProductRepo(db *gorm.DB) ProductRepoI {
 	return &ProductDB{db: db}
 }
 
-func (r *ProductDB) SaveCreateProduct(product *entities.Product) (*entities.Product, error) {
+func (r *ProductDB) SaveCreateProduct(product entities.Product) (*entities.Product, error) {
 	createProduct := models.ProductToGormProduct(product)
 	err := r.db.Create(&createProduct).Error
 	if err != nil {
@@ -25,7 +25,7 @@ func (r *ProductDB) SaveCreateProduct(product *entities.Product) (*entities.Prod
 	return productEntity, nil
 }
 
-func (r *ProductDB) SaveUpdateProduct(product *entities.Product) (*entities.Product, error) {
+func (r *ProductDB) SaveUpdateProduct(product entities.Product) (*entities.Product, error) {
 	updateProduct := models.ProductToGormProduct(product)
 	err := r.db.Model(&models.Product{}).Where("product_id = ?", product.ProductId).Updates(&updateProduct).Error
 	if err != nil {

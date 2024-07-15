@@ -17,15 +17,15 @@ func (Stock) TableName() string {
 	return "stocks"
 }
 
-func (s Stock) ToStock() *entities.Stock {
-	return &entities.Stock{
+func (s Stock) ToStock() entities.Stock {
+	return entities.Stock{
 		ProductId: s.ProductID,
 		Quantity:  s.Quantity,
 	}
 }
 
-func StockToGormStock(s *entities.Stock) *Stock {
-	return &Stock{
+func StockToGormStock(s entities.Stock) Stock {
+	return Stock{
 		ProductID: s.ProductId,
 		Quantity:  s.Quantity,
 	}

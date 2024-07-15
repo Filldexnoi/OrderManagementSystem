@@ -20,8 +20,8 @@ func (Product) TableName() string {
 	return "products"
 }
 
-func ProductToGormProduct(p *entities.Product) *Product {
-	return &Product{
+func ProductToGormProduct(p entities.Product) Product {
+	return Product{
 		ProductId:    p.ProductId,
 		ProductTypes: p.ProductTypes,
 		ProductName:  p.ProductName,
@@ -29,8 +29,8 @@ func ProductToGormProduct(p *entities.Product) *Product {
 	}
 }
 
-func (p Product) ToProduct() *entities.Product {
-	return &entities.Product{
+func (p Product) ToProduct() entities.Product {
+	return entities.Product{
 		ProductId:    p.ProductId,
 		ProductTypes: p.ProductTypes,
 		ProductName:  p.ProductName,

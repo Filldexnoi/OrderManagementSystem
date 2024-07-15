@@ -31,8 +31,8 @@ func (*Item) TableName() string {
 	return "items"
 }
 
-func (t *Transaction) ToTransaction() *entities.Transaction {
-	return &entities.Transaction{
+func (t *Transaction) ToTransaction() entities.Transaction {
+	return entities.Transaction{
 		TransactionId: t.TransactionID,
 		OrderAddress:  t.OrderAddress,
 		Items:         t.ToItems(),
@@ -55,8 +55,8 @@ func (t *Transaction) ToItems() []entities.Item {
 	return items
 }
 
-func TransactionToGormTransaction(transaction *entities.Transaction) *Transaction {
-	return &Transaction{
+func TransactionToGormTransaction(transaction entities.Transaction) Transaction {
+	return Transaction{
 		TransactionID: transaction.TransactionId,
 		OrderAddress:  transaction.OrderAddress,
 		Items:         ItemToGormItem(transaction),
@@ -64,7 +64,7 @@ func TransactionToGormTransaction(transaction *entities.Transaction) *Transactio
 	}
 }
 
-func ItemToGormItem(transaction *entities.Transaction) []Item {
+func ItemToGormItem(transaction entities.Transaction) []Item {
 	var items []Item
 	for _, item := range transaction.Items {
 		items = append(items, Item{

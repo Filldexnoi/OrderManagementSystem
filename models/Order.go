@@ -18,16 +18,16 @@ func (*Order) TableName() string {
 	return "orders"
 }
 
-func (o *Order) ToOrder() *entities.Order {
-	return &entities.Order{
+func (o *Order) ToOrder() entities.Order {
+	return entities.Order{
 		OrderId:       o.OrderId,
 		TransactionId: o.TransactionID,
 		Status:        o.Status,
 	}
 }
 
-func OrderToGormOrder(o *entities.Order) *Order {
-	return &Order{
+func OrderToGormOrder(o entities.Order) Order {
+	return Order{
 		OrderId:       o.OrderId,
 		TransactionID: o.TransactionId,
 		Status:        o.Status,

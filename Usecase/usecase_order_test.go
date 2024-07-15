@@ -1,6 +1,7 @@
 package Usecase
 
 import (
+	"awesomeProject/Repo"
 	"awesomeProject/entities"
 	"errors"
 	"github.com/google/uuid"
@@ -8,268 +9,173 @@ import (
 	"testing"
 )
 
-type mockOrderRepo struct {
-	SaveCreateOrderFunc         func(order *entities.Order) error
-	GetOrderForUpdateStatusFunc func(id uuid.UUID) (*entities.Order, error)
-	SaveUpdateStatusOrderFunc   func(o *entities.Order) error
-	SaveGetAllOrdersFunc        func() ([]*entities.Order, error)
-}
-
-func (m *mockOrderRepo) SaveCreateOrder(order *entities.Order) error {
-	return m.SaveCreateOrderFunc(order)
-}
-
-func (m *mockOrderRepo) GetOrderForUpdateStatus(id uuid.UUID) (*entities.Order, error) {
-	return m.GetOrderForUpdateStatusFunc(id)
-}
-
-func (m *mockOrderRepo) SaveUpdateStatusOrder(order *entities.Order) error {
-	return m.SaveUpdateStatusOrderFunc(order)
-}
-
-func (m *mockOrderRepo) SaveGetAllOrders() ([]*entities.Order, error) {
-	return m.SaveGetAllOrdersFunc()
-}
-
 func TestOrderUseCase_CreateOrder(t *testing.T) {
+	mockOrderRepo := new(Repo.OrderRepoMock)
+	mockTransactionRepo := new(Repo.TransactionRepoMock)
+	mockStockRepo := new(Repo.StockRepoMock)
+	service := NewOrderUseCase(mockOrderRepo, mockStockRepo, mockTransactionRepo)
+	transaction := &entities.Transaction{
+		TransactionId: uuid.New(),
+		OrderAddress:  "th",
+		Items: []entities.Item{
+			{ProductId: 1, Quantity: 5, Price: 100},
+			{ProductId: 2, Quantity: 3, Price: 200},
+		},
+		TotalPrice: 1100,
+	}
+	order := &entities.Order{
+		OrderId:       uuid.New(),
+		TransactionId: transaction.TransactionId,
+	}
+
+	orderInvalidStatusInit := &entities.Order{
+		OrderId:       uuid.New(),
+		TransactionId: transaction.TransactionId,
+		Status:        "Processing",
+	}
+
 	t.Run("success", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			SaveCreateOrderFunc: func(order *entities.Order) error {
-				return nil
-			},
-		}
-		TRepo := &mockTransactionRepo{
-			GetTransactionToCreateOrderFunc: func(order *entities.Order) (*entities.Transaction, error) {
-				return &entities.Transaction{}, nil
-			},
-		}
-		SRepo := &mockStockRepo{
-			CheckStockToCreateOrderFunc: func(transaction *entities.Transaction) error {
-				return nil
-			},
-		}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		err := service.CreateOrder(
-			&entities.Order{
-				TransactionId: uuid.Nil,
-			},
-		)
+		mockTransactionRepo.On("GetTransactionToCreateOrder", order).Return(transaction, nil).Once()
+		mockStockRepo.On("CheckStockToCreateOrder", transaction).Return(nil).Once()
+		mockOrderRepo.On("SaveCreateOrder", order).Return(order, nil).Once()
+		result, err := service.CreateOrder(order)
 		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, order.TransactionId, result.TransactionId)
+		mockOrderRepo.AssertExpectations(t)
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 
 	t.Run("Stock not enough", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			SaveCreateOrderFunc: func(order *entities.Order) error {
-				return nil
-			},
-		}
-		TRepo := &mockTransactionRepo{
-			GetTransactionToCreateOrderFunc: func(order *entities.Order) (*entities.Transaction, error) {
-				return &entities.Transaction{}, nil
-			},
-		}
-		SRepo := &mockStockRepo{
-			CheckStockToCreateOrderFunc: func(transaction *entities.Transaction) error {
-				return errors.New("stock not enough")
-			},
-		}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		err := service.CreateOrder(
-			&entities.Order{
-				TransactionId: uuid.Nil,
-			},
-		)
+		mockTransactionRepo.On("GetTransactionToCreateOrder", order).Return(transaction, nil).Once()
+		mockStockRepo.On("CheckStockToCreateOrder", transaction).Return(errors.New("stock not enough")).Once()
+		result, err := service.CreateOrder(order)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "stock not enough")
+		assert.Nil(t, result)
+		assert.Equal(t, "stock not enough", err.Error())
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 
-	t.Run("Dont have Transaction", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			SaveCreateOrderFunc: func(order *entities.Order) error {
-				return nil
-			},
-		}
-		TRepo := &mockTransactionRepo{
-			GetTransactionToCreateOrderFunc: func(order *entities.Order) (*entities.Transaction, error) {
-				return nil, errors.New("dont have transaction")
-			},
-		}
-		SRepo := &mockStockRepo{
-			CheckStockToCreateOrderFunc: func(transaction *entities.Transaction) error {
-				return nil
-			},
-		}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		err := service.CreateOrder(
-			&entities.Order{
-				TransactionId: uuid.Nil,
-			},
-		)
+	t.Run("cannot get transaction", func(t *testing.T) {
+		mockTransactionRepo.On("GetTransactionToCreateOrder", order).Return(nil, errors.New("cannot get transaction")).Once()
+		result, err := service.CreateOrder(order)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "dont have transaction")
+		assert.Nil(t, result)
+		assert.Equal(t, "cannot get transaction", err.Error())
+		mockTransactionRepo.AssertExpectations(t)
 	})
 
 	t.Run("Invalid status to init", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			SaveCreateOrderFunc: func(order *entities.Order) error {
-				return nil
-			},
-		}
-		TRepo := &mockTransactionRepo{
-			GetTransactionToCreateOrderFunc: func(order *entities.Order) (*entities.Transaction, error) {
-				return &entities.Transaction{}, nil
-			},
-		}
-		SRepo := &mockStockRepo{
-			CheckStockToCreateOrderFunc: func(transaction *entities.Transaction) error {
-				return nil
-			},
-		}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		err := service.CreateOrder(
-			&entities.Order{
-				TransactionId: uuid.Nil,
-				Status:        "Processing",
-			})
+		mockTransactionRepo.On("GetTransactionToCreateOrder", orderInvalidStatusInit).Return(transaction, nil).Once()
+		mockStockRepo.On("CheckStockToCreateOrder", transaction).Return(nil).Once()
+		result, err := service.CreateOrder(orderInvalidStatusInit)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "invalid order status: from Processing to New")
+		assert.Nil(t, result)
+		assert.Equal(t, "invalid order status: from Processing to New", err.Error())
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 
 	t.Run("Cannot save create order", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			SaveCreateOrderFunc: func(order *entities.Order) error {
-				return errors.New("cannot save create order")
-			},
-		}
-		TRepo := &mockTransactionRepo{
-			GetTransactionToCreateOrderFunc: func(order *entities.Order) (*entities.Transaction, error) {
-				return &entities.Transaction{}, nil
-			},
-		}
-		SRepo := &mockStockRepo{
-			CheckStockToCreateOrderFunc: func(transaction *entities.Transaction) error {
-				return nil
-			},
-		}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		err := service.CreateOrder(
-			&entities.Order{
-				TransactionId: uuid.Nil,
-			})
+		mockTransactionRepo.On("GetTransactionToCreateOrder", order).Return(transaction, nil).Once()
+		mockStockRepo.On("CheckStockToCreateOrder", transaction).Return(nil).Once()
+		mockOrderRepo.On("SaveCreateOrder", order).Return(nil, errors.New("cannot save create order")).Once()
+		result, err := service.CreateOrder(order)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "cannot save create order")
+		assert.Nil(t, result)
+		assert.Equal(t, "cannot save create order", err.Error())
+		mockOrderRepo.AssertExpectations(t)
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 }
 
 func TestOrderUseCase_UpdateStatus(t *testing.T) {
+	mockOrderRepo := new(Repo.OrderRepoMock)
+	mockTransactionRepo := new(Repo.TransactionRepoMock)
+	mockStockRepo := new(Repo.StockRepoMock)
+	service := NewOrderUseCase(mockOrderRepo, mockStockRepo, mockTransactionRepo)
+	getOrder := &entities.Order{
+		OrderId:       uuid.New(),
+		TransactionId: uuid.New(),
+		Status:        "New",
+	}
+	order := &entities.Order{
+		OrderId:       getOrder.OrderId,
+		TransactionId: getOrder.TransactionId,
+		Status:        "Paid",
+	}
+	orderInvalidStatus := &entities.Order{
+		OrderId:       getOrder.OrderId,
+		TransactionId: getOrder.TransactionId,
+		Status:        "Processing",
+	}
+
 	t.Run("success", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			GetOrderForUpdateStatusFunc: func(id uuid.UUID) (*entities.Order, error) {
-				return &entities.Order{
-					Status: "New",
-				}, nil
-			},
-			SaveUpdateStatusOrderFunc: func(o *entities.Order) error {
-				return nil
-			},
-		}
-		TRepo := &mockTransactionRepo{}
-		SRepo := &mockStockRepo{}
-
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		order := &entities.Order{
-			Status: "Paid",
-		}
-		err := service.UpdateStatusOrder(order, uuid.Nil)
+		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil).Once()
+		mockOrderRepo.On("SaveUpdateStatusOrder", order).Return(order, nil).Once()
+		result, err := service.UpdateStatusOrder(order, order.OrderId)
 		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, order, result)
+		mockOrderRepo.AssertExpectations(t)
 	})
 
-	t.Run("Cannot save update status", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			GetOrderForUpdateStatusFunc: func(id uuid.UUID) (*entities.Order, error) {
-				return &entities.Order{Status: "New"}, nil
-			},
-			SaveUpdateStatusOrderFunc: func(o *entities.Order) error {
-				return errors.New("cannot save update status")
-			},
-		}
-		TRepo := &mockTransactionRepo{}
-		SRepo := &mockStockRepo{}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		order := &entities.Order{
-			Status: "Paid",
-		}
-		err := service.UpdateStatusOrder(order, uuid.Nil)
+	t.Run("cannot save update status", func(t *testing.T) {
+		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil).Once()
+		mockOrderRepo.On("SaveUpdateStatusOrder", order).Return(nil, errors.New("cannot save update status")).Once()
+		result, err := service.UpdateStatusOrder(order, order.OrderId)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "cannot save update status")
+		assert.Nil(t, result)
+		assert.Equal(t, "cannot save update status", err.Error())
+		mockOrderRepo.AssertExpectations(t)
 	})
 
-	t.Run("Cannot get order", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			GetOrderForUpdateStatusFunc: func(id uuid.UUID) (*entities.Order, error) {
-				return nil, errors.New("cannot get order")
-			},
-			SaveUpdateStatusOrderFunc: func(o *entities.Order) error {
-				return nil
-			},
-		}
-		TRepo := &mockTransactionRepo{}
-		SRepo := &mockStockRepo{}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		order := &entities.Order{
-			Status: "Paid",
-		}
-		err := service.UpdateStatusOrder(order, uuid.Nil)
+	t.Run("cannot get order", func(t *testing.T) {
+		mockOrderRepo.On("GetOrderForUpdateStatus", order.OrderId).Return(nil, errors.New("cannot get order")).Once()
+		result, err := service.UpdateStatusOrder(order, order.OrderId)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "cannot get order")
+		assert.Nil(t, result)
+		assert.Equal(t, "cannot get order", err.Error())
+		mockOrderRepo.AssertExpectations(t)
 	})
 
-	t.Run("Cannot change status", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			GetOrderForUpdateStatusFunc: func(id uuid.UUID) (*entities.Order, error) {
-				return &entities.Order{Status: "New"}, nil
-			},
-			SaveUpdateStatusOrderFunc: func(o *entities.Order) error {
-				return nil
-			},
-		}
-		TRepo := &mockTransactionRepo{}
-		SRepo := &mockStockRepo{}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		order := &entities.Order{
-			Status: "Processing",
-		}
-		err := service.UpdateStatusOrder(order, uuid.Nil)
+	t.Run("cannot change status", func(t *testing.T) {
+		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil).Once()
+		result, err := service.UpdateStatusOrder(orderInvalidStatus, orderInvalidStatus.OrderId)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "invalid o status: from New to Processing")
+		assert.Nil(t, result)
+		assert.Equal(t, "invalid o status: from New to Processing", err.Error())
+		mockOrderRepo.AssertExpectations(t)
 	})
 }
 
 func TestOrderUseCase_GetAllOrders(t *testing.T) {
+	mockOrderRepo := new(Repo.OrderRepoMock)
+	mockTransactionRepo := new(Repo.TransactionRepoMock)
+	mockStockRepo := new(Repo.StockRepoMock)
+	service := NewOrderUseCase(mockOrderRepo, mockStockRepo, mockTransactionRepo)
+	orders := []*entities.Order{
+		{OrderId: uuid.New(), TransactionId: uuid.New(), Status: "New"},
+		{OrderId: uuid.New(), TransactionId: uuid.New(), Status: "Paid"},
+	}
 	t.Run("success", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			SaveGetAllOrdersFunc: func() ([]*entities.Order, error) {
-				return []*entities.Order{}, nil
-			},
-		}
-		TRepo := &mockTransactionRepo{}
-		SRepo := &mockStockRepo{}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		_, err := service.GetAllOrders()
+		mockOrderRepo.On("SaveGetAllOrders").Return(orders, nil).Once()
+		result, err := service.GetAllOrders()
 		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Equal(t, orders, result)
+		mockOrderRepo.AssertExpectations(t)
 	})
 
-	t.Run("Cannot get all orders", func(t *testing.T) {
-		ORepo := &mockOrderRepo{
-			SaveGetAllOrdersFunc: func() ([]*entities.Order, error) {
-				return nil, errors.New("cannot get all orders")
-			},
-		}
-		TRepo := &mockTransactionRepo{}
-		SRepo := &mockStockRepo{}
-		service := NewOrderUseCase(ORepo, SRepo, TRepo)
-		_, err := service.GetAllOrders()
+	t.Run("cannot get all orders", func(t *testing.T) {
+		mockOrderRepo.On("SaveGetAllOrders").Return(nil, errors.New("cannot get all orders")).Once()
+		result, err := service.GetAllOrders()
 		assert.Error(t, err)
-		assert.EqualError(t, err, "cannot get all orders")
+		assert.Nil(t, result)
+		assert.Equal(t, "cannot get all orders", err.Error())
+		mockOrderRepo.AssertExpectations(t)
 	})
 }

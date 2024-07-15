@@ -13,38 +13,39 @@ type Order struct {
 }
 
 func (o *Order) ChangeStatus(status string) (*Order, error) {
+	order := &Order{TransactionId: o.TransactionId, OrderId: o.OrderId, Status: o.Status}
 	if o.Status == "" {
-		return o, errors.New("invalid o status")
+		return nil, errors.New("invalid o status")
 	}
 	if o.Status == status {
-		return o, nil
+		return order, nil
 	}
 	switch o.Status {
 
 	case "New":
 		if status == "Paid" {
-			o.Status = status
-			return o, nil
+			order.Status = status
+			return order, nil
 		}
 
 	case "Paid":
 		if status == "Processing" {
-			o.Status = status
-			return o, nil
+			order.Status = status
+			return order, nil
 		}
 		if status == "Done" {
-			o.Status = status
-			return o, nil
+			order.Status = status
+			return order, nil
 		}
 
 	case "Processing":
 		if status == "Done" {
-			o.Status = status
-			return o, nil
+			order.Status = status
+			return order, nil
 		}
 	}
 
-	return o, fmt.Errorf("%w: from %s to %s", errors.New("invalid o status"), o.Status, status)
+	return order, fmt.Errorf("%w: from %s to %s", errors.New("invalid o status"), o.Status, status)
 }
 
 func (o *Order) InitStatus() (*Order, error) {

@@ -19,20 +19,20 @@ type ResponseOrder struct {
 	Status        string    `json:"status"`
 }
 
-func (p *RequestCreateOrder) ToOrder() *entities.Order {
-	return &entities.Order{
+func (p *RequestCreateOrder) ToOrder() entities.Order {
+	return entities.Order{
 		TransactionId: p.TransactionId,
 	}
 }
 
-func (p *RequestUpdateStatusOrder) ToOrder() *entities.Order {
-	return &entities.Order{
+func (p *RequestUpdateStatusOrder) ToOrder() entities.Order {
+	return entities.Order{
 		Status: p.Status,
 	}
 }
 
-func OrderToOrderRespond(order *entities.Order) *ResponseOrder {
-	return &ResponseOrder{
+func OrderToOrderRespond(order entities.Order) ResponseOrder {
+	return ResponseOrder{
 		OrderId:       order.OrderId,
 		TransactionId: order.TransactionId,
 		Status:        order.Status,

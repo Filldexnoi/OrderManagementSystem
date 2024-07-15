@@ -22,7 +22,7 @@ type RespondTransaction struct {
 	TotalPrice    float64   `json:"total_price"`
 }
 
-func (t *RequestTransaction) ToTransaction() *entities.Transaction {
+func (t *RequestTransaction) ToTransaction() entities.Transaction {
 	items := make([]entities.Item, len(t.Items))
 	for i, item := range t.Items {
 		items[i] = entities.Item{
@@ -30,13 +30,13 @@ func (t *RequestTransaction) ToTransaction() *entities.Transaction {
 			Quantity:  item.Quantity,
 		}
 	}
-	return &entities.Transaction{
+	return entities.Transaction{
 		OrderAddress: t.Address,
 		Items:        items,
 	}
 }
 
-func TransactionToResTransaction(transaction *entities.Transaction) *RespondTransaction {
+func TransactionToResTransaction(transaction entities.Transaction) RespondTransaction {
 	items := make([]Item, len(transaction.Items))
 	for i, item := range transaction.Items {
 		items[i] = Item{
@@ -44,7 +44,7 @@ func TransactionToResTransaction(transaction *entities.Transaction) *RespondTran
 			Quantity:  item.Quantity,
 		}
 	}
-	return &RespondTransaction{
+	return RespondTransaction{
 		TransactionID: transaction.TransactionId,
 		Address:       transaction.OrderAddress,
 		Items:         items,

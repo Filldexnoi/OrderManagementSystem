@@ -12,15 +12,15 @@ type RequestStock struct {
 	Quantity  uint `json:"quantity"`
 }
 
-func (s *RequestStock) ToStock() *entities.Stock {
-	return &entities.Stock{
+func (s *RequestStock) ToStock() entities.Stock {
+	return entities.Stock{
 		ProductId: s.ProductId,
 		Quantity:  s.Quantity,
 	}
 }
 
-func StockToStockRes(s *entities.Stock) *RespondStock {
-	return &RespondStock{
+func StockToStockRes(s entities.Stock) RespondStock {
+	return RespondStock{
 		ProductId: s.ProductId,
 		Quantity:  s.Quantity,
 	}

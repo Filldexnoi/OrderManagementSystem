@@ -9,7 +9,7 @@ type StockRepoMock struct {
 	mock.Mock
 }
 
-func (m *StockRepoMock) SaveCreateStock(stock *entities.Stock) (*entities.Stock, error) {
+func (m *StockRepoMock) SaveCreateStock(stock entities.Stock) (*entities.Stock, error) {
 	args := m.Called(stock)
 	if args.Get(0) != nil {
 		return args.Get(0).(*entities.Stock), nil
@@ -33,7 +33,7 @@ func (m *StockRepoMock) SaveGetQtyByIDProduct(id uint) (*entities.Stock, error) 
 	return nil, args.Error(1)
 }
 
-func (m *StockRepoMock) SaveUpdateStock(stock *entities.Stock) (*entities.Stock, error) {
+func (m *StockRepoMock) SaveUpdateStock(stock entities.Stock) (*entities.Stock, error) {
 	args := m.Called(stock)
 	if args.Get(0) != nil {
 		return args.Get(0).(*entities.Stock), nil

@@ -25,7 +25,7 @@ func (m *TransactionRepoMock) SaveGetAllTransaction() ([]*entities.Transaction, 
 	return nil, args.Error(1)
 }
 
-func (m *TransactionRepoMock) GetTransactionToCreateOrder(order *entities.Order) (*entities.Transaction, error) {
+func (m *TransactionRepoMock) GetTransactionToCreateOrder(order entities.Order) (*entities.Transaction, error) {
 	args := m.Called(order)
 	if args.Get(0) != nil {
 		return args.Get(0).(*entities.Transaction), args.Error(1)

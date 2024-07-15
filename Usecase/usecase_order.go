@@ -20,7 +20,7 @@ func NewOrderUseCase(o Repo.OrderRepoI, s Repo.StockRepoI, t Repo.TransactionRep
 	}
 }
 
-func (u *OrderUseCase) CreateOrder(o *entities.Order) (*entities.Order, error) {
+func (u *OrderUseCase) CreateOrder(o entities.Order) (*entities.Order, error) {
 	transaction, err := u.TransactionRepo.GetTransactionToCreateOrder(o)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (u *OrderUseCase) CreateOrder(o *entities.Order) (*entities.Order, error) {
 	return createdOrder, nil
 }
 
-func (u *OrderUseCase) UpdateStatusOrder(o *entities.Order, id uuid.UUID) (*entities.Order, error) {
+func (u *OrderUseCase) UpdateStatusOrder(o entities.Order, id uuid.UUID) (*entities.Order, error) {
 	order, err := u.OrderRepo.GetOrderForUpdateStatus(id)
 	if err != nil {
 		return nil, err

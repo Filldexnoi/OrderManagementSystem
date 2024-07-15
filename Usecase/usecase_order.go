@@ -25,9 +25,6 @@ func (u *OrderUseCase) CreateOrder(o *entities.Order) (*entities.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	if transaction.TransactionId != o.TransactionId {
-		return nil, err
-	}
 	err = u.StockRepo.CheckStockToCreateOrder(transaction)
 	if err != nil {
 		return nil, err
@@ -46,9 +43,6 @@ func (u *OrderUseCase) CreateOrder(o *entities.Order) (*entities.Order, error) {
 func (u *OrderUseCase) UpdateStatusOrder(o *entities.Order, id uuid.UUID) (*entities.Order, error) {
 	order, err := u.OrderRepo.GetOrderForUpdateStatus(id)
 	if err != nil {
-		return nil, err
-	}
-	if order.OrderId != id {
 		return nil, err
 	}
 	newStatusOrder, err := order.ChangeStatus(o.Status)

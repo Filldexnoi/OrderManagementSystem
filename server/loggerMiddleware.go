@@ -6,30 +6,25 @@ import (
 	"time"
 )
 
-func LoggerMiddleware(c *fiber.Ctx) error {
-	if c.Path() == "/metrics" {
-		return c.Next()
+func LoggerMiddleware(next fiber.Handler) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		start := time.Now()
+
+		fields := logrus.Fields{
+			"method":   c.Method(),
+			"path":     c.Path(),
+			"query":    c.OriginalURL(),
+			"remoteIP": c.IP(),
+		}
+		err := next(c)
+		if err != nil {
+			return err
+		}
+
+		fields["status"] = c.Response().StatusCode()
+		fields["latency"] = time.Since(start).Seconds()
+
+		logrus.WithFields(fields).Info("HTTP response")
+		return nil
 	}
-
-	start := time.Now()
-
-	fields := logrus.Fields{
-		"method":   c.Method(),
-		"path":     c.Path(),
-		"query":    c.OriginalURL(),
-		"remoteIP": c.IP(),
-	}
-
-	logrus.WithFields(fields).Info("HTTP request")
-
-	err := c.Next()
-	if err != nil {
-		return err
-	}
-
-	fields["status"] = c.Response().StatusCode()
-	fields["latency"] = time.Since(start).Seconds()
-
-	logrus.WithFields(fields).Info("HTTP response")
-	return nil
 }

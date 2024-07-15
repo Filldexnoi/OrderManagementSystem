@@ -26,8 +26,8 @@ func (o *Order) ToOrder() *entities.Order {
 	}
 }
 
-func OrderToGormOrder(o *entities.Order) *Order {
-	return &Order{
+func OrderToGormOrder(o entities.Order) Order {
+	return Order{
 		OrderId:       o.OrderId,
 		TransactionID: o.TransactionId,
 		Status:        o.Status,

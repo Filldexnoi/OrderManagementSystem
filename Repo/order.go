@@ -15,7 +15,7 @@ func NewOrderRepo(db *gorm.DB) OrderRepoI {
 	return &OrderRepo{DB: db}
 }
 
-func (r *OrderRepo) SaveCreateOrder(order *entities.Order) (*entities.Order, error) {
+func (r *OrderRepo) SaveCreateOrder(order entities.Order) (*entities.Order, error) {
 	createdOrder := models.OrderToGormOrder(order)
 	err := r.DB.Create(&createdOrder).Error
 	if err != nil {
@@ -35,7 +35,7 @@ func (r *OrderRepo) GetOrderForUpdateStatus(id uuid.UUID) (*entities.Order, erro
 	return orderEntity, nil
 }
 
-func (r *OrderRepo) SaveUpdateStatusOrder(o *entities.Order) (*entities.Order, error) {
+func (r *OrderRepo) SaveUpdateStatusOrder(o entities.Order) (*entities.Order, error) {
 	updatedOrder := models.OrderToGormOrder(o)
 	err := r.DB.Save(&updatedOrder).Error
 	if err != nil {

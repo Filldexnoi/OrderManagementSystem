@@ -23,12 +23,17 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 		},
 		TotalPrice: 1100,
 	}
-	order := &entities.Order{
+	order := entities.Order{
 		OrderId:       uuid.New(),
 		TransactionId: transaction.TransactionId,
 	}
+	orderInitStatus := entities.Order{
+		OrderId:       order.OrderId,
+		TransactionId: transaction.TransactionId,
+		Status:        "New",
+	}
 
-	orderInvalidStatusInit := &entities.Order{
+	orderInvalidStatusInit := entities.Order{
 		OrderId:       uuid.New(),
 		TransactionId: transaction.TransactionId,
 		Status:        "Processing",
@@ -37,11 +42,11 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		mockTransactionRepo.On("GetTransactionToCreateOrder", order).Return(transaction, nil).Once()
 		mockStockRepo.On("CheckStockToCreateOrder", transaction).Return(nil).Once()
-		mockOrderRepo.On("SaveCreateOrder", order).Return(order, nil).Once()
+		mockOrderRepo.On("SaveCreateOrder", orderInitStatus).Return(&orderInitStatus, nil).Once()
 		result, err := service.CreateOrder(order)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, order.TransactionId, result.TransactionId)
+		assert.Equal(t, &orderInitStatus, result)
 		mockOrderRepo.AssertExpectations(t)
 		mockTransactionRepo.AssertExpectations(t)
 		mockStockRepo.AssertExpectations(t)
@@ -81,7 +86,7 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 	t.Run("Cannot save create order", func(t *testing.T) {
 		mockTransactionRepo.On("GetTransactionToCreateOrder", order).Return(transaction, nil).Once()
 		mockStockRepo.On("CheckStockToCreateOrder", transaction).Return(nil).Once()
-		mockOrderRepo.On("SaveCreateOrder", order).Return(nil, errors.New("cannot save create order")).Once()
+		mockOrderRepo.On("SaveCreateOrder", orderInitStatus).Return(nil, errors.New("cannot save create order")).Once()
 		result, err := service.CreateOrder(order)
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -102,12 +107,12 @@ func TestOrderUseCase_UpdateStatus(t *testing.T) {
 		TransactionId: uuid.New(),
 		Status:        "New",
 	}
-	order := &entities.Order{
+	order := entities.Order{
 		OrderId:       getOrder.OrderId,
 		TransactionId: getOrder.TransactionId,
 		Status:        "Paid",
 	}
-	orderInvalidStatus := &entities.Order{
+	orderInvalidStatus := entities.Order{
 		OrderId:       getOrder.OrderId,
 		TransactionId: getOrder.TransactionId,
 		Status:        "Processing",
@@ -115,11 +120,11 @@ func TestOrderUseCase_UpdateStatus(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		mockOrderRepo.On("GetOrderForUpdateStatus", getOrder.OrderId).Return(getOrder, nil).Once()
-		mockOrderRepo.On("SaveUpdateStatusOrder", order).Return(order, nil).Once()
+		mockOrderRepo.On("SaveUpdateStatusOrder", order).Return(&order, nil).Once()
 		result, err := service.UpdateStatusOrder(order, order.OrderId)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, order, result)
+		assert.Equal(t, &order, result)
 		mockOrderRepo.AssertExpectations(t)
 	})
 

@@ -6,7 +6,7 @@ import (
 )
 
 type OrderUseCaseI interface {
-	CreateOrder(order *entities.Order) (*entities.Order, error)
-	UpdateStatusOrder(o *entities.Order, id uuid.UUID) (*entities.Order, error)
+	CreateOrder(order entities.Order) (*entities.Order, error)
+	UpdateStatusOrder(o entities.Order, id uuid.UUID) (*entities.Order, error)
 	GetAllOrders() ([]*entities.Order, error)
 }

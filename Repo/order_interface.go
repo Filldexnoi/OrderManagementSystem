@@ -6,8 +6,8 @@ import (
 )
 
 type OrderRepoI interface {
-	SaveCreateOrder(order *entities.Order) (*entities.Order, error)
+	SaveCreateOrder(order entities.Order) (*entities.Order, error)
 	GetOrderForUpdateStatus(id uuid.UUID) (*entities.Order, error)
-	SaveUpdateStatusOrder(o *entities.Order) (*entities.Order, error)
+	SaveUpdateStatusOrder(o entities.Order) (*entities.Order, error)
 	SaveGetAllOrders() ([]*entities.Order, error)
 }

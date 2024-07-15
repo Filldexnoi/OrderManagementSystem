@@ -43,6 +43,8 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 		assert.NotNil(t, result)
 		assert.Equal(t, order.TransactionId, result.TransactionId)
 		mockOrderRepo.AssertExpectations(t)
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 
 	t.Run("Stock not enough", func(t *testing.T) {
@@ -52,7 +54,8 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "stock not enough", err.Error())
-		mockOrderRepo.AssertExpectations(t)
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 
 	t.Run("cannot get transaction", func(t *testing.T) {
@@ -61,7 +64,7 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "cannot get transaction", err.Error())
-		mockOrderRepo.AssertExpectations(t)
+		mockTransactionRepo.AssertExpectations(t)
 	})
 
 	t.Run("Invalid status to init", func(t *testing.T) {
@@ -71,7 +74,8 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "invalid order status: from Processing to New", err.Error())
-		mockOrderRepo.AssertExpectations(t)
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 
 	t.Run("Cannot save create order", func(t *testing.T) {
@@ -83,6 +87,8 @@ func TestOrderUseCase_CreateOrder(t *testing.T) {
 		assert.Nil(t, result)
 		assert.Equal(t, "cannot save create order", err.Error())
 		mockOrderRepo.AssertExpectations(t)
+		mockTransactionRepo.AssertExpectations(t)
+		mockStockRepo.AssertExpectations(t)
 	})
 }
 

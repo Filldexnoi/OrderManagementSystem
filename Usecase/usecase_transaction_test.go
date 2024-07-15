@@ -47,6 +47,7 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, transaction, result)
+		mockProductRepo.AssertExpectations(t)
 		mockTransactionRepo.AssertExpectations(t)
 	})
 
@@ -70,7 +71,7 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "cannot get price products", err.Error())
-		mockTransactionRepo.AssertExpectations(t)
+		mockProductRepo.AssertExpectations(t)
 	})
 
 	t.Run("Cannot create transaction", func(t *testing.T) {
@@ -80,6 +81,7 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "cannot create transaction", err.Error())
+		mockProductRepo.AssertExpectations(t)
 		mockTransactionRepo.AssertExpectations(t)
 	})
 }

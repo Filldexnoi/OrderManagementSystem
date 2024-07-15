@@ -18,7 +18,7 @@ func InitPostgres(config *config.Config) (*gorm.DB, error) {
 		config.DBPassword,
 		config.DBName)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
 		return nil, err

@@ -17,8 +17,8 @@ type RespondProduct struct {
 	ProductPrice float64 `json:"product_price"`
 }
 
-func (p *RequestProduct) ToProduct() *entities.Product {
-	return &entities.Product{
+func (p RequestProduct) ToProduct() entities.Product {
+	return entities.Product{
 		ProductTypes: p.ProductTypes,
 		ProductName:  p.ProductName,
 		ProductPrice: p.ProductPrice,

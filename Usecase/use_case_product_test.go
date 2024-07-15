@@ -12,16 +12,16 @@ func TestProductUseCase_CreateProduct(t *testing.T) {
 	mockProductRepo := new(Repo.ProductRepoMock)
 	service := NewProductUseCase(mockProductRepo)
 
-	product := &entities.Product{ProductId: 1, ProductName: "long shirt", ProductTypes: "shirt", ProductPrice: 500}
+	product := entities.Product{ProductId: 1, ProductName: "long shirt", ProductTypes: "shirt", ProductPrice: 500}
 
 	t.Run("successful create", func(t *testing.T) {
-		mockProductRepo.On("SaveCreateProduct", product).Return(product, nil).Once()
+		mockProductRepo.On("SaveCreateProduct", product).Return(&product, nil).Once()
 
 		result, err := service.CreateProduct(product)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, product, result)
+		assert.Equal(t, &product, result)
 		mockProductRepo.AssertExpectations(t)
 	})
 
@@ -90,14 +90,14 @@ func TestProductUseCase_GetByIDProduct(t *testing.T) {
 func TestProductUseCase_UpdateProduct(t *testing.T) {
 	mockProductRepo := new(Repo.ProductRepoMock)
 	service := NewProductUseCase(mockProductRepo)
-	product := &entities.Product{ProductId: 1, ProductName: "zzz", ProductTypes: "shirt", ProductPrice: 1000}
+	product := entities.Product{ProductId: 1, ProductName: "zzz", ProductTypes: "shirt", ProductPrice: 1000}
 	id := uint(1)
 	t.Run("successful update product", func(t *testing.T) {
-		mockProductRepo.On("SaveUpdateProduct", product).Return(product, nil).Once()
+		mockProductRepo.On("SaveUpdateProduct", product).Return(&product, nil).Once()
 		result, err := service.UpdateProduct(product, id)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, result, product)
+		assert.Equal(t, result, &product)
 		mockProductRepo.AssertExpectations(t)
 	})
 

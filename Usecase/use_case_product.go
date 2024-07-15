@@ -13,7 +13,7 @@ func NewProductUseCase(repo Repo.ProductRepoI) ProductUseCaseI {
 	return &ProductUseCase{repo: repo}
 }
 
-func (s *ProductUseCase) CreateProduct(product *entities.Product) (*entities.Product, error) {
+func (s *ProductUseCase) CreateProduct(product entities.Product) (*entities.Product, error) {
 	createdProduct, err := s.repo.SaveCreateProduct(product)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (s *ProductUseCase) GetByIDProduct(id uint) (*entities.Product, error) {
 	return product, err
 }
 
-func (s *ProductUseCase) UpdateProduct(product *entities.Product, id uint) (*entities.Product, error) {
+func (s *ProductUseCase) UpdateProduct(product entities.Product, id uint) (*entities.Product, error) {
 	product.ProductId = id
 	updatedProduct, err := s.repo.SaveUpdateProduct(product)
 	if err != nil {

@@ -16,7 +16,7 @@ func NewStock(db *gorm.DB) StockRepoI {
 	return &Stock{db: db}
 }
 
-func (r *Stock) SaveCreateStock(stock *entities.Stock) (*entities.Stock, error) {
+func (r *Stock) SaveCreateStock(stock entities.Stock) (*entities.Stock, error) {
 	createStock := models.StockToGormStock(stock)
 	err := r.db.Create(&createStock).Error
 	if err != nil {
@@ -26,7 +26,7 @@ func (r *Stock) SaveCreateStock(stock *entities.Stock) (*entities.Stock, error) 
 	return stockEntity, nil
 }
 
-func (r *Stock) SaveUpdateStock(stock *entities.Stock) (*entities.Stock, error) {
+func (r *Stock) SaveUpdateStock(stock entities.Stock) (*entities.Stock, error) {
 	updateStock := models.StockToGormStock(stock)
 	err := r.db.Model(&models.Stock{}).Where("product_id = ?", updateStock.ProductID).Updates(&updateStock).Error
 	if err != nil {

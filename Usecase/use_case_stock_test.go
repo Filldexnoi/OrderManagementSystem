@@ -12,13 +12,13 @@ func TestStockUseCase_CreateStock(t *testing.T) {
 	mockStockRepo := new(Repo.StockRepoMock)
 	service := NewStockUseCase(mockStockRepo)
 
-	stock := &entities.Stock{ProductId: 1, Quantity: 20}
+	stock := entities.Stock{ProductId: 1, Quantity: 20}
 	t.Run("successful create stock", func(t *testing.T) {
-		mockStockRepo.On("SaveCreateStock", stock).Return(stock, nil).Once()
+		mockStockRepo.On("SaveCreateStock", stock).Return(&stock, nil).Once()
 		result, err := service.CreateStock(stock)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, stock, result)
+		assert.Equal(t, &stock, result)
 		mockStockRepo.AssertExpectations(t)
 	})
 
@@ -87,13 +87,13 @@ func TestStockUseCase_UpdateStock(t *testing.T) {
 	mockStockRepo := new(Repo.StockRepoMock)
 	service := NewStockUseCase(mockStockRepo)
 
-	stock := &entities.Stock{ProductId: 1, Quantity: 20}
+	stock := entities.Stock{ProductId: 1, Quantity: 20}
 	t.Run("success", func(t *testing.T) {
-		mockStockRepo.On("SaveUpdateStock", stock).Return(stock, nil).Once()
+		mockStockRepo.On("SaveUpdateStock", stock).Return(&stock, nil).Once()
 		result, err := service.UpdateStock(stock, stock.ProductId)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, stock, result)
+		assert.Equal(t, &stock, result)
 		mockStockRepo.AssertExpectations(t)
 	})
 

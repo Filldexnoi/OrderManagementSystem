@@ -13,7 +13,7 @@ func NewStockUseCase(repo Repo.StockRepoI) StockUseCaseI {
 	return &StockUseCase{repo: repo}
 }
 
-func (s *StockUseCase) CreateStock(stock *entities.Stock) (*entities.Stock, error) {
+func (s *StockUseCase) CreateStock(stock entities.Stock) (*entities.Stock, error) {
 	createStock, err := s.repo.SaveCreateStock(stock)
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (s *StockUseCase) CreateStock(stock *entities.Stock) (*entities.Stock, erro
 	return createStock, nil
 }
 
-func (s *StockUseCase) UpdateStock(stock *entities.Stock, id uint) (*entities.Stock, error) {
+func (s *StockUseCase) UpdateStock(stock entities.Stock, id uint) (*entities.Stock, error) {
 	stock.ProductId = id
 	updatedStock, err := s.repo.SaveUpdateStock(stock)
 	if err != nil {

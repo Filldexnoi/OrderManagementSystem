@@ -24,8 +24,8 @@ func (s Stock) ToStock() *entities.Stock {
 	}
 }
 
-func StockToGormStock(s *entities.Stock) *Stock {
-	return &Stock{
+func StockToGormStock(s entities.Stock) Stock {
+	return Stock{
 		ProductID: s.ProductId,
 		Quantity:  s.Quantity,
 	}

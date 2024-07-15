@@ -5,10 +5,10 @@ import (
 )
 
 type StockRepoI interface {
-	SaveCreateStock(stock *entities.Stock) error
+	SaveCreateStock(stock *entities.Stock) (*entities.Stock, error)
 	SaveGetQtyAllProduct() ([]*entities.Stock, error)
 	SaveGetQtyByIDProduct(id uint) (*entities.Stock, error)
-	SaveUpdateStock(stock *entities.Stock) error
-	SaveDeleteStock(id uint) error
+	SaveUpdateStock(stock *entities.Stock) (*entities.Stock, error)
+	SaveDeleteStock(id uint) (*entities.Stock, error)
 	CheckStockToCreateOrder(transaction *entities.Transaction) error
 }

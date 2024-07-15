@@ -5,7 +5,6 @@ import (
 	"awesomeProject/models"
 	"errors"
 	"gorm.io/gorm"
-	"time"
 )
 
 type ProductDB struct {
@@ -16,24 +15,38 @@ func NewProductRepo(db *gorm.DB) ProductRepoI {
 	return &ProductDB{db: db}
 }
 
-func (r *ProductDB) SaveCreateProduct(product *entities.Product) error {
-	gormProduct := models.ProductToGormProduct(product)
-	gormProduct.ProductCreatedAt = time.Now()
-	err := r.db.Create(gormProduct).Error
+func (r *ProductDB) SaveCreateProduct(product *entities.Product) (*entities.Product, error) {
+	createProduct := models.ProductToGormProduct(product)
+	err := r.db.Create(&createProduct).Error
 	if err != nil {
-		return errors.New("cannot create product")
+		return nil, err
 	}
-	return nil
+	productEntity := createProduct.ToProduct()
+	return productEntity, nil
 }
 
-func (r *ProductDB) SaveUpdateProduct(product *entities.Product) error {
-	gormProduct := models.ProductToGormProduct(product)
-	gormProduct.ProductUpdatedAt = time.Now()
-	return r.db.Model(&models.Product{}).Where("product_id = ?", product.ProductId).Updates(gormProduct).Error
+func (r *ProductDB) SaveUpdateProduct(product *entities.Product) (*entities.Product, error) {
+	updateProduct := models.ProductToGormProduct(product)
+	err := r.db.Model(&models.Product{}).Where("product_id = ?", product.ProductId).Updates(&updateProduct).Error
+	if err != nil {
+		return nil, err
+	}
+	productEntity := updateProduct.ToProduct()
+	return productEntity, nil
 }
 
-func (r *ProductDB) SaveDeleteProduct(id uint) error {
-	return r.db.Delete(&models.Product{}, id).Error
+func (r *ProductDB) SaveDeleteProduct(id uint) (*entities.Product, error) {
+	var deletedProduct models.Product
+
+	if err := r.db.First(&deletedProduct, id).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.db.Delete(&deletedProduct, id).Error; err != nil {
+		return nil, err
+	}
+	productEntity := deletedProduct.ToProduct()
+	return productEntity, nil
 }
 
 func (r *ProductDB) SaveGetAllProduct() ([]*entities.Product, error) {

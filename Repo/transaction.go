@@ -14,19 +14,27 @@ func NewTransactionRepo(db *gorm.DB) TransactionRepoI {
 	return &TransactionRepo{db: db}
 }
 
-func (r *TransactionRepo) SaveCreateTransaction(transaction *entities.Transaction) error {
-	TransactionGorm := models.TransactionToGormTransaction(transaction)
-	return r.db.Create(&TransactionGorm).Error
+func (r *TransactionRepo) SaveCreateTransaction(transaction *entities.Transaction) (*entities.Transaction, error) {
+	createTransaction := models.TransactionToGormTransaction(transaction)
+	err := r.db.Create(&createTransaction).Error
+	if err != nil {
+		return nil, err
+	}
+	transactionEntity := createTransaction.ToTransaction()
+	return transactionEntity, nil
 }
 
 func (r *TransactionRepo) SaveGetAllTransaction() ([]*entities.Transaction, error) {
 	var TransactionsGorm []models.Transaction
 	err := r.db.Model(&models.Transaction{}).Preload("Items.Product").Find(&TransactionsGorm).Error
+	if err != nil {
+		return nil, err
+	}
 	var transaction []*entities.Transaction
 	for _, t := range TransactionsGorm {
 		transaction = append(transaction, t.ToTransaction())
 	}
-	return transaction, err
+	return transaction, nil
 }
 
 func (r *TransactionRepo) GetTransactionToCreateOrder(order *entities.Order) (*entities.Transaction, error) {
@@ -37,5 +45,5 @@ func (r *TransactionRepo) GetTransactionToCreateOrder(order *entities.Order) (*e
 		return nil, err
 	}
 	transactionEntity := transaction.ToTransaction()
-	return transactionEntity, err
+	return transactionEntity, nil
 }

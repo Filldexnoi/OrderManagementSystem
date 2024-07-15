@@ -22,11 +22,12 @@ func (h *OrderHandler) CreateOrder(c *fiber.Ctx) error {
 	if err := c.BodyParser(orderPayload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err := h.UseCase.CreateOrder(orderPayload.ToOrder())
+	order, err := h.UseCase.CreateOrder(orderPayload.ToOrder())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.Status(fiber.StatusCreated).JSON(orderPayload)
+	ResOrder := payload.OrderToOrderRespond(order)
+	return c.Status(fiber.StatusCreated).JSON(ResOrder)
 }
 func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
 	idP := c.Params("id")
@@ -34,15 +35,16 @@ func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid order ID"})
 	}
-	order := new(payload.RequestUpdateStatusOrder)
-	if err := c.BodyParser(order); err != nil {
+	ReqOrder := new(payload.RequestUpdateStatusOrder)
+	if err := c.BodyParser(ReqOrder); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-	err = h.UseCase.UpdateStatusOrder(order.ToOrder(), id)
+	order, err := h.UseCase.UpdateStatusOrder(ReqOrder.ToOrder(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
-	return c.JSON(order)
+	ResOrder := payload.OrderToOrderRespond(order)
+	return c.Status(fiber.StatusOK).JSON(ResOrder)
 }
 
 func (h *OrderHandler) GetAllOrders(c *fiber.Ctx) error {
@@ -54,5 +56,5 @@ func (h *OrderHandler) GetAllOrders(c *fiber.Ctx) error {
 	for _, order := range orders {
 		ResOrders = append(ResOrders, payload.OrderToOrderRespond(order))
 	}
-	return c.JSON(ResOrders)
+	return c.Status(fiber.StatusOK).JSON(ResOrders)
 }

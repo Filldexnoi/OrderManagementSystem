@@ -23,15 +23,15 @@ type Item struct {
 	Product       *Product
 }
 
-func (Transaction) TableName() string {
+func (*Transaction) TableName() string {
 	return "transactions"
 }
 
-func (Item) TableName() string {
+func (*Item) TableName() string {
 	return "items"
 }
 
-func (t Transaction) ToTransaction() *entities.Transaction {
+func (t *Transaction) ToTransaction() *entities.Transaction {
 	return &entities.Transaction{
 		TransactionId: t.TransactionID,
 		OrderAddress:  t.OrderAddress,
@@ -40,15 +40,14 @@ func (t Transaction) ToTransaction() *entities.Transaction {
 	}
 }
 
-func (i Item) ToItem() entities.Item {
+func (i *Item) ToItem() entities.Item {
 	return entities.Item{
-		ProductId: i.Product.ProductId,
+		ProductId: i.ProductID,
 		Quantity:  i.Quantity,
-		Price:     i.Product.ProductPrice,
 	}
 }
 
-func (t Transaction) ToItems() []entities.Item {
+func (t *Transaction) ToItems() []entities.Item {
 	var items []entities.Item
 	for _, item := range t.Items {
 		items = append(items, item.ToItem())

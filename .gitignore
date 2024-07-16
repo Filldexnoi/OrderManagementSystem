@@ -4,16 +4,30 @@
 .env
 
 # Ignore specific files in MinIO system directories
-evaluate-loki/.data/minio/.minio.sys/buckets/.bloomcycle.bin/xl.meta
-evaluate-loki/.data/minio/.minio.sys/buckets/.usage-cache.bin.bkp/xl.meta
-evaluate-loki/.data/minio/.minio.sys/buckets/.usage-cache.bin/xl.meta
-evaluate-loki/.data/minio/.minio.sys/buckets/.usage.json/xl.meta
-evaluate-loki/.data/minio/.minio.sys/buckets/loki-data/.usage-cache.bin.bkp/xl.meta
-evaluate-loki/.data/minio/.minio.sys/buckets/loki-data/.usage-cache.bin/xl.meta
-evaluate-loki/.data/minio/.minio.sys/buckets/loki-ruler/.usage-cache.bin.bkp/xl.meta
-evaluate-loki/.data/minio/.minio.sys/buckets/loki-ruler/.usage-cache.bin/xl.meta
+docker/.data/minio/.minio.sys/buckets/.bloomcycle.bin/xl.meta
+docker/.data/minio/.minio.sys/buckets/.usage-cache.bin.bkp/xl.meta
+docker/.data/minio/.minio.sys/buckets/.usage-cache.bin/xl.meta
+docker/.data/minio/.minio.sys/buckets/.usage.json/xl.meta
+docker/.data/minio/.minio.sys/buckets/loki-data/.usage-cache.bin.bkp/xl.meta
+docker/.data/minio/.minio.sys/buckets/loki-data/.usage-cache.bin/xl.meta
+docker/.data/minio/.minio.sys/buckets/loki-ruler/.usage-cache.bin.bkp/xl.meta
+docker/.data/minio/.minio.sys/buckets/loki-ruler/.usage-cache.bin/xl.meta
+docker/.data/minio/.minio.sys/config/config.json/xl.meta
+docker/.data/minio/.minio.sys/config/iam/format.json/xl.meta
+docker/.data/minio/.minio.sys/format.json
+docker/.data/minio/.minio.sys/pool.bin/xl.meta
+docker/.data/minio/.minio.sys/tmp/.trash/*/xl.meta.bkp
+docker/.data/minio/.minio.sys/tmp/.trash/*/xl.meta
+docker/.data/minio/.minio.sys/tmp/*
 
-# Ignore entire directory of tmp and trash in MinIO system directories
-evaluate-loki/.data/minio/.minio.sys/tmp/.trash/
+docker/.data/minio/.minio.sys/tmp/.trash/
+# Ignore loki data
+docker/.data/minio/loki-data/*
+
+# Ignore prometheus data
+docker/prometheus-data/*
+
+# Ignore tempo data
+docker/tempo-data/*
 
 observability/logs/logs.log

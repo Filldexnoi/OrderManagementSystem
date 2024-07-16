@@ -15,3 +15,5 @@ evaluate-loki/.data/minio/.minio.sys/buckets/loki-ruler/.usage-cache.bin/xl.meta
 
 # Ignore entire directory of tmp and trash in MinIO system directories
 evaluate-loki/.data/minio/.minio.sys/tmp/.trash/
+
+observability/logs/logs.log

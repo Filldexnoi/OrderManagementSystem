@@ -2,12 +2,13 @@ package Usecase
 
 import (
 	"awesomeProject/entities"
+	"context"
 )
 
 type ProductUseCaseI interface {
-	CreateProduct(product entities.Product) (*entities.Product, error)
-	GetAllProducts() ([]*entities.Product, error)
-	GetByIDProduct(id uint) (*entities.Product, error)
-	UpdateProduct(product entities.Product, id uint) (*entities.Product, error)
-	DeleteProduct(id uint) (*entities.Product, error)
+	CreateProduct(ctx context.Context, product entities.Product) (*entities.Product, error)
+	GetAllProducts(ctx context.Context) ([]*entities.Product, error)
+	GetByIDProduct(ctx context.Context, id uint) (*entities.Product, error)
+	UpdateProduct(ctx context.Context, product entities.Product, id uint) (*entities.Product, error)
+	DeleteProduct(ctx context.Context, id uint) (*entities.Product, error)
 }

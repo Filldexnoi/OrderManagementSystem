@@ -5,12 +5,23 @@ import (
 	"awesomeProject/Usecase"
 	"awesomeProject/config"
 	"awesomeProject/database"
+	"awesomeProject/observability/logs"
 	"awesomeProject/server"
+	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 )
 
 func main() {
+	logs.InitLogger()
+	defer func(LogFile *os.File) {
+		err := LogFile.Close()
+		if err != nil {
+		}
+	}(logs.LogFile)
+	fields := logrus.Fields{"module": "main", "function": "main"}
+	logs.LogInfo("Service started", fields)
+
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal("Error loading config:", err)
@@ -23,17 +34,8 @@ func main() {
 	Repository := Repo.NewGormRepo(db.SQL)
 	UseCase := Usecase.NewUseCase(Repository)
 
-	logFile := server.SetUpLogger()
-	defer func(logFile *os.File) {
-		err := logFile.Close()
-		if err != nil {
-
-		}
-	}(logFile)
-
 	s := server.NewFiberServer()
-	s.SetupFiberRoute(UseCase)
-	if err := s.Start(cfg.PORT, logFile); err != nil {
+	if err := s.Start(cfg.PORT, UseCase); err != nil {
 		log.Fatal(err)
 	}
 }

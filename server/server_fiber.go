@@ -13,6 +13,7 @@ type FiberServer struct {
 func NewFiberServer() FiberServer {
 	app := fiber.New()
 	app.Use(LoggerMiddleware)
+	app.Use(TracingMiddleware)
 	return FiberServer{app: app}
 }
 

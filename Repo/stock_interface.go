@@ -2,6 +2,7 @@ package Repo
 
 import (
 	"awesomeProject/entities"
+	"context"
 )
 
 type StockRepoI interface {
@@ -10,5 +11,5 @@ type StockRepoI interface {
 	SaveGetQtyByIDProduct(id uint) (*entities.Stock, error)
 	SaveUpdateStock(stock entities.Stock) (*entities.Stock, error)
 	SaveDeleteStock(id uint) (*entities.Stock, error)
-	CheckStockToCreateOrder(transaction *entities.Transaction) error
+	CheckStockToCreateOrder(ctx context.Context, transaction *entities.Transaction) error
 }

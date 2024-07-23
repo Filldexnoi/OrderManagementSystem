@@ -22,7 +22,7 @@ func NewTransactionHandler(u Usecase.TransactionUseCaseI) TransactionHandlerI {
 }
 
 func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("transaction").Start(c.Context(), "TransactionCreateHandler")
+	ctx, sp := otel.Tracer("transaction").Start(c.UserContext(), "TransactionCreateHandler")
 	defer sp.End()
 
 	transactionPayload := new(payload.RequestTransaction)
@@ -42,7 +42,7 @@ func (h *TransactionHandler) CreateTransaction(c *fiber.Ctx) error {
 }
 
 func (h *TransactionHandler) GetAllTransactions(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("transaction").Start(c.Context(), "TransactionGetAllHandler")
+	ctx, sp := otel.Tracer("transaction").Start(c.UserContext(), "TransactionGetAllHandler")
 	defer sp.End()
 	Transactions, err := h.UseCase.GetAllTransaction(ctx)
 	if err != nil {

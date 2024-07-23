@@ -22,7 +22,7 @@ func NewProductHandler(UseCase Usecase.ProductUseCaseI) ProductHandlerI {
 }
 
 func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("product").Start(c.Context(), "productCreateHandler")
+	ctx, sp := otel.Tracer("product").Start(c.UserContext(), "productCreateHandler")
 	defer sp.End()
 
 	product := new(payload.RequestProduct)
@@ -42,7 +42,7 @@ func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
 }
 
 func (h *ProductHandler) GetAllProducts(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("product").Start(c.Context(), "productGetAllHandler")
+	ctx, sp := otel.Tracer("product").Start(c.UserContext(), "productGetAllHandler")
 	defer sp.End()
 
 	products, err := h.UseCase.GetAllProducts(ctx)
@@ -60,7 +60,7 @@ func (h *ProductHandler) GetAllProducts(c *fiber.Ctx) error {
 }
 
 func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("product").Start(c.Context(), "productGetByIDHandler")
+	ctx, sp := otel.Tracer("product").Start(c.UserContext(), "productGetByIDHandler")
 	defer sp.End()
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -79,7 +79,7 @@ func (h *ProductHandler) GetProductByID(c *fiber.Ctx) error {
 }
 
 func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("product").Start(c.Context(), "productUpdateHandler")
+	ctx, sp := otel.Tracer("product").Start(c.UserContext(), "productUpdateHandler")
 	defer sp.End()
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -103,7 +103,7 @@ func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
 }
 
 func (h *ProductHandler) DeleteProduct(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("product").Start(c.Context(), "productDeleteHandler")
+	ctx, sp := otel.Tracer("product").Start(c.UserContext(), "productDeleteHandler")
 	defer sp.End()
 	id, err := c.ParamsInt("id")
 	if err != nil {

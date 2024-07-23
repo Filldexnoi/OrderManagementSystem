@@ -86,7 +86,9 @@ func (r *Stock) SaveGetQtyByIDProduct(ctx context.Context, id uint) (*entities.S
 	return stock, err
 }
 
-func (r *Stock) CheckStockToCreateOrder(transaction *entities.Transaction) error {
+func (r *Stock) CheckStockToCreateOrder(ctx context.Context, transaction *entities.Transaction) error {
+	_, sp := otel.Tracer("order").Start(ctx, "CheckStockToCreateOrderRepository")
+	defer sp.End()
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		for _, item := range transaction.Items {
 			result := tx.Model(&models.Stock{}).Where("product_id = ? AND quantity >= ?", item.ProductId, item.Quantity).
@@ -99,10 +101,26 @@ func (r *Stock) CheckStockToCreateOrder(transaction *entities.Transaction) error
 				return errors.New(fmt.Sprintf("ไม่สามารถลดจำนวนสินค้าได้เนื่องจากสินค้า ID %d มีจำนวนในสต็อกไม่เพียงพอ", item.ProductId))
 			}
 		}
+		r.SetTransactionSubAttributes(transaction, sp)
 		return nil
 	})
 }
 
+func (r *Stock) SetTransactionSubAttributes(transaction *entities.Transaction, sp trace.Span) {
+	var itemID = make([]int, len(transaction.Items))
+	var itemQuantity = make([]int, len(transaction.Items))
+
+	for _, item := range transaction.Items {
+		itemID = append(itemID, int(item.ProductId))
+		itemQuantity = append(itemQuantity, int(item.Quantity))
+	}
+	sp.SetAttributes(
+		attribute.String("TransactionID", transaction.TransactionId.String()),
+		attribute.String("TransactionOrderAddress", transaction.OrderAddress),
+		attribute.IntSlice("ItemID", itemID),
+		attribute.IntSlice("ItemQuantity", itemQuantity),
+	)
+  
 func (r *Stock) SetSubAttributesWithJson(obj any, sp trace.Span) {
 	if stocks, ok := obj.([]*entities.Stock); ok {
 		var productID []int

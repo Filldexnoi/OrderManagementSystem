@@ -11,5 +11,5 @@ type StockRepoI interface {
 	SaveGetQtyByIDProduct(ctx context.Context, id uint) (*entities.Stock, error)
 	SaveUpdateStock(ctx context.Context, stock entities.Stock) (*entities.Stock, error)
 	SaveDeleteStock(ctx context.Context, id uint) (*entities.Stock, error)
-	CheckStockToCreateOrder(transaction *entities.Transaction) error
+	CheckStockToCreateOrder(ctx context.Context, transaction *entities.Transaction) error
 }

@@ -49,7 +49,9 @@ func (r *TransactionRepo) SaveGetAllTransaction(ctx context.Context) ([]*entitie
 	return transaction, nil
 }
 
-func (r *TransactionRepo) GetTransactionToCreateOrder(order entities.Order) (*entities.Transaction, error) {
+func (r *TransactionRepo) GetTransactionToCreateOrder(ctx context.Context, order entities.Order) (*entities.Transaction, error) {
+	_, sp := otel.Tracer("order").Start(ctx, "getTransactionToCreateOrderRepository")
+	defer sp.End()
 	var transaction models.Transaction
 	err := r.db.Model(&models.Transaction{}).Where("transaction_id = ?", order.TransactionId).
 		Preload("Items.Product").First(&transaction).Error
@@ -57,6 +59,7 @@ func (r *TransactionRepo) GetTransactionToCreateOrder(order entities.Order) (*en
 		return nil, err
 	}
 	transactionEntity := transaction.ToTransaction()
+	r.SetTransactionSubAttributes(transactionEntity, sp)
 	return transactionEntity, nil
 }
 

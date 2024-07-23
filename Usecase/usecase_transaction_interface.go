@@ -2,9 +2,10 @@ package Usecase
 
 import (
 	"awesomeProject/entities"
+	"context"
 )
 
 type TransactionUseCaseI interface {
-	CreateTransaction(transaction entities.Transaction) (*entities.Transaction, error)
-	GetAllTransaction() ([]*entities.Transaction, error)
+	CreateTransaction(ctx context.Context, transaction entities.Transaction) (*entities.Transaction, error)
+	GetAllTransaction(ctx context.Context) ([]*entities.Transaction, error)
 }

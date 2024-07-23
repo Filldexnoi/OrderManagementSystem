@@ -3,7 +3,13 @@ package Repo
 import (
 	"awesomeProject/entities"
 	"awesomeProject/models"
+	"context"
+	"errors"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"gorm.io/gorm"
+	"reflect"
 )
 
 type TransactionRepo struct {
@@ -14,17 +20,22 @@ func NewTransactionRepo(db *gorm.DB) TransactionRepoI {
 	return &TransactionRepo{db: db}
 }
 
-func (r *TransactionRepo) SaveCreateTransaction(transaction *entities.Transaction) (*entities.Transaction, error) {
+func (r *TransactionRepo) SaveCreateTransaction(ctx context.Context, transaction *entities.Transaction) (*entities.Transaction, error) {
+	_, sp := otel.Tracer("transaction").Start(ctx, "TransactionCreateRepository")
+	defer sp.End()
 	createTransaction := models.TransactionToGormTransaction(transaction)
 	err := r.db.Create(&createTransaction).Error
 	if err != nil {
 		return nil, err
 	}
 	transactionEntity := createTransaction.ToTransaction()
+	r.SetTransactionSubAttributes(transactionEntity, sp)
 	return transactionEntity, nil
 }
 
-func (r *TransactionRepo) SaveGetAllTransaction() ([]*entities.Transaction, error) {
+func (r *TransactionRepo) SaveGetAllTransaction(ctx context.Context) ([]*entities.Transaction, error) {
+	_, sp := otel.Tracer("transaction").Start(ctx, "TransactionGetAllRepository")
+	defer sp.End()
 	var TransactionsGorm []models.Transaction
 	err := r.db.Model(&models.Transaction{}).Preload("Items.Product").Find(&TransactionsGorm).Error
 	if err != nil {
@@ -34,6 +45,7 @@ func (r *TransactionRepo) SaveGetAllTransaction() ([]*entities.Transaction, erro
 	for _, t := range TransactionsGorm {
 		transaction = append(transaction, t.ToTransaction())
 	}
+	r.SetTransactionSubAttributes(transaction, sp)
 	return transaction, nil
 }
 
@@ -46,4 +58,31 @@ func (r *TransactionRepo) GetTransactionToCreateOrder(order entities.Order) (*en
 	}
 	transactionEntity := transaction.ToTransaction()
 	return transactionEntity, nil
+}
+
+func (r *TransactionRepo) SetTransactionSubAttributes(obj any, sp trace.Span) {
+	if transactions, ok := obj.([]*entities.Transaction); ok {
+		transactionID := make([]string, len(transactions))
+		transactionOrderAddress := make([]string, len(transactions))
+		transactionTotalPrice := make([]float64, len(transactions))
+
+		for _, transaction := range transactions {
+			transactionID = append(transactionID, transaction.TransactionId.String())
+			transactionOrderAddress = append(transactionOrderAddress, transaction.OrderAddress)
+			transactionTotalPrice = append(transactionTotalPrice, transaction.TotalPrice)
+		}
+		sp.SetAttributes(
+			attribute.StringSlice("TransactionID", transactionID),
+			attribute.StringSlice("TransactionOrderAddress", transactionOrderAddress),
+			attribute.Float64Slice("TransactionTotalPrice", transactionTotalPrice),
+		)
+	} else if transaction, ok := obj.(*entities.Transaction); ok {
+		sp.SetAttributes(
+			attribute.String("TransactionID", transaction.TransactionId.String()),
+			attribute.String("TransactionOrderAddress", transaction.OrderAddress),
+			attribute.Float64("TransactionTotalPrice", transaction.TotalPrice),
+		)
+	} else {
+		sp.RecordError(errors.New("invalid type" + reflect.TypeOf(obj).String()))
+	}
 }

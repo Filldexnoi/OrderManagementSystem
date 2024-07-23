@@ -1,9 +1,12 @@
 package Repo
 
-import "awesomeProject/entities"
+import (
+	"awesomeProject/entities"
+	"context"
+)
 
 type TransactionRepoI interface {
-	SaveCreateTransaction(transaction *entities.Transaction) (*entities.Transaction, error)
-	SaveGetAllTransaction() ([]*entities.Transaction, error)
+	SaveCreateTransaction(context context.Context, transaction *entities.Transaction) (*entities.Transaction, error)
+	SaveGetAllTransaction(context context.Context) ([]*entities.Transaction, error)
 	GetTransactionToCreateOrder(order entities.Order) (*entities.Transaction, error)
 }

@@ -2,12 +2,13 @@ package Usecase
 
 import (
 	"awesomeProject/entities"
+	"context"
 )
 
 type StockUseCaseI interface {
-	CreateStock(stock entities.Stock) (*entities.Stock, error)
-	GetQtyAllProduct() ([]*entities.Stock, error)
-	GetQtyByIDProduct(id uint) (*entities.Stock, error)
-	UpdateStock(stock entities.Stock, id uint) (*entities.Stock, error)
-	DeleteStock(id uint) (*entities.Stock, error)
+	CreateStock(ctx context.Context, stock entities.Stock) (*entities.Stock, error)
+	GetQtyAllProduct(ctx context.Context) ([]*entities.Stock, error)
+	GetQtyByIDProduct(ctx context.Context, id uint) (*entities.Stock, error)
+	UpdateStock(ctx context.Context, stock entities.Stock, id uint) (*entities.Stock, error)
+	DeleteStock(ctx context.Context, id uint) (*entities.Stock, error)
 }

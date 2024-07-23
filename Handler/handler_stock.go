@@ -22,7 +22,7 @@ func NewStockHandler(useCase Usecase.StockUseCaseI) *StockHandler {
 }
 
 func (h *StockHandler) CreateStock(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("stock").Start(c.Context(), "stockCreateHandler")
+	ctx, sp := otel.Tracer("stock").Start(c.UserContext(), "stockCreateHandler")
 	defer sp.End()
 	stock := new(payload.RequestStock)
 	if err := c.BodyParser(stock); err != nil {
@@ -41,7 +41,7 @@ func (h *StockHandler) CreateStock(c *fiber.Ctx) error {
 }
 
 func (h *StockHandler) GetAllQtyProducts(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("stock").Start(c.Context(), "stockGetAllHandler")
+	ctx, sp := otel.Tracer("stock").Start(c.UserContext(), "stockGetAllHandler")
 	defer sp.End()
 	stocks, err := h.UseCase.GetQtyAllProduct(ctx)
 	if err != nil {
@@ -58,7 +58,7 @@ func (h *StockHandler) GetAllQtyProducts(c *fiber.Ctx) error {
 }
 
 func (h *StockHandler) GetQtyProductByID(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("stock").Start(c.Context(), "stockGetByIDHandler")
+	ctx, sp := otel.Tracer("stock").Start(c.UserContext(), "stockGetByIDHandler")
 	defer sp.End()
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -77,7 +77,7 @@ func (h *StockHandler) GetQtyProductByID(c *fiber.Ctx) error {
 }
 
 func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("stock").Start(c.Context(), "stockUpdateHandler")
+	ctx, sp := otel.Tracer("stock").Start(c.UserContext(), "stockUpdateHandler")
 	defer sp.End()
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -101,7 +101,7 @@ func (h *StockHandler) UpdateStock(c *fiber.Ctx) error {
 }
 
 func (h *StockHandler) DeleteStock(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("stock").Start(c.Context(), "stockDeleteHandler")
+	ctx, sp := otel.Tracer("stock").Start(c.UserContext(), "stockDeleteHandler")
 	defer sp.End()
 	id, err := c.ParamsInt("id")
 	if err != nil {

@@ -120,7 +120,7 @@ func (r *Stock) SetTransactionSubAttributes(transaction *entities.Transaction, s
 		attribute.IntSlice("ItemID", itemID),
 		attribute.IntSlice("ItemQuantity", itemQuantity),
 	)
-  
+}
 func (r *Stock) SetSubAttributesWithJson(obj any, sp trace.Span) {
 	if stocks, ok := obj.([]*entities.Stock); ok {
 		var productID []int

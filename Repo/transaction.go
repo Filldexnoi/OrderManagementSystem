@@ -20,17 +20,22 @@ func NewTransactionRepo(db *gorm.DB) TransactionRepoI {
 	return &TransactionRepo{db: db}
 }
 
-func (r *TransactionRepo) SaveCreateTransaction(transaction *entities.Transaction) (*entities.Transaction, error) {
+func (r *TransactionRepo) SaveCreateTransaction(ctx context.Context, transaction *entities.Transaction) (*entities.Transaction, error) {
+	_, sp := otel.Tracer("transaction").Start(ctx, "TransactionCreateRepository")
+	defer sp.End()
 	createTransaction := models.TransactionToGormTransaction(transaction)
 	err := r.db.Create(&createTransaction).Error
 	if err != nil {
 		return nil, err
 	}
 	transactionEntity := createTransaction.ToTransaction()
+	r.SetTransactionSubAttributes(transactionEntity, sp)
 	return transactionEntity, nil
 }
 
-func (r *TransactionRepo) SaveGetAllTransaction() ([]*entities.Transaction, error) {
+func (r *TransactionRepo) SaveGetAllTransaction(ctx context.Context) ([]*entities.Transaction, error) {
+	_, sp := otel.Tracer("transaction").Start(ctx, "TransactionGetAllRepository")
+	defer sp.End()
 	var TransactionsGorm []models.Transaction
 	err := r.db.Model(&models.Transaction{}).Preload("Items.Product").Find(&TransactionsGorm).Error
 	if err != nil {
@@ -40,6 +45,7 @@ func (r *TransactionRepo) SaveGetAllTransaction() ([]*entities.Transaction, erro
 	for _, t := range TransactionsGorm {
 		transaction = append(transaction, t.ToTransaction())
 	}
+	r.SetTransactionSubAttributes(transaction, sp)
 	return transaction, nil
 }
 

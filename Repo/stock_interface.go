@@ -6,10 +6,10 @@ import (
 )
 
 type StockRepoI interface {
-	SaveCreateStock(stock entities.Stock) (*entities.Stock, error)
-	SaveGetQtyAllProduct() ([]*entities.Stock, error)
-	SaveGetQtyByIDProduct(id uint) (*entities.Stock, error)
-	SaveUpdateStock(stock entities.Stock) (*entities.Stock, error)
-	SaveDeleteStock(id uint) (*entities.Stock, error)
+	SaveCreateStock(ctx context.Context, stock entities.Stock) (*entities.Stock, error)
+	SaveGetQtyAllProduct(ctx context.Context) ([]*entities.Stock, error)
+	SaveGetQtyByIDProduct(ctx context.Context, id uint) (*entities.Stock, error)
+	SaveUpdateStock(ctx context.Context, stock entities.Stock) (*entities.Stock, error)
+	SaveDeleteStock(ctx context.Context, id uint) (*entities.Stock, error)
 	CheckStockToCreateOrder(ctx context.Context, transaction *entities.Transaction) error
 }

@@ -62,6 +62,7 @@ func (r *OrderRepo) SaveUpdateStatusOrder(ctx context.Context, o entities.Order)
 
 func (r *OrderRepo) SaveGetAllOrders(ctx context.Context) ([]*entities.Order, error) {
 	_, sp := otel.Tracer("order").Start(ctx, "SaveGetAllOrdersRepository")
+	defer sp.End()
 	var ordersGorm []*models.Order
 	err := r.DB.Find(&ordersGorm).Error
 	if err != nil {

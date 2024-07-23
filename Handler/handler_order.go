@@ -25,7 +25,7 @@ func NewOrderHandler(orderUseCase Usecase.OrderUseCaseI) OrderHandlerI {
 }
 
 func (h *OrderHandler) CreateOrder(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("order").Start(c.Context(), "orderCreateHandler")
+	ctx, sp := otel.Tracer("order").Start(c.UserContext(), "orderCreateHandler")
 	defer sp.End()
 	orderPayload := new(payload.RequestCreateOrder)
 	if err := c.BodyParser(orderPayload); err != nil {
@@ -43,7 +43,7 @@ func (h *OrderHandler) CreateOrder(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(ResOrder)
 }
 func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("order").Start(c.Context(), "orderUpdateHandler")
+	ctx, sp := otel.Tracer("order").Start(c.UserContext(), "orderUpdateHandler")
 	defer sp.End()
 	idP := c.Params("id")
 	id, err := uuid.Parse(idP)
@@ -68,7 +68,7 @@ func (h *OrderHandler) UpdateOrderStatus(c *fiber.Ctx) error {
 }
 
 func (h *OrderHandler) GetAllOrders(c *fiber.Ctx) error {
-	ctx, sp := otel.Tracer("order").Start(c.Context(), "orderGetAllHandler")
+	ctx, sp := otel.Tracer("order").Start(c.UserContext(), "orderGetAllHandler")
 	defer sp.End()
 	orders, err := h.UseCase.GetAllOrders(ctx)
 	if err != nil {

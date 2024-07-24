@@ -2,6 +2,7 @@ package server
 
 import (
 	"awesomeProject/Usecase"
+	"awesomeProject/observability/metrics"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 )
@@ -12,6 +13,7 @@ type FiberServer struct {
 
 func NewFiberServer() FiberServer {
 	app := fiber.New()
+	metrics.InitMetrics()
 	app.Use(LoggerMiddleware)
 	app.Use(TracingMiddleware)
 	return FiberServer{app: app}

@@ -3,9 +3,11 @@ package Usecase
 import (
 	"awesomeProject/Repo"
 	"awesomeProject/entities"
+	"context"
 	"errors"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"testing"
 )
 
@@ -41,9 +43,10 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 		TotalPrice: 1100,
 	}
 	t.Run("success", func(t *testing.T) {
-		mockProductRepo.On("GetPriceProducts", &transaction).Return(&transaction, nil).Once()
-		mockTransactionRepo.On("SaveCreateTransaction", &transaction).Return(&transaction, nil).Once()
-		result, err := service.CreateTransaction(transaction)
+		mockProductRepo.On("GetPriceProducts", mock.Anything, &transaction).Return(&transaction, nil).Once()
+		mockTransactionRepo.On("SaveCreateTransaction", mock.Anything, &transaction).Return(&transaction, nil).Once()
+		ctx := context.Background()
+		result, err := service.CreateTransaction(ctx, transaction)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, &transaction, result)
@@ -52,22 +55,25 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 	})
 
 	t.Run("Invalid country", func(t *testing.T) {
-		result, err := service.CreateTransaction(transactionInvalidCountry)
+		ctx := context.Background()
+		result, err := service.CreateTransaction(ctx, transactionInvalidCountry)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "dont have this country", err.Error())
 	})
 
 	t.Run("Duplicate Id Product", func(t *testing.T) {
-		result, err := service.CreateTransaction(transactionDuplicateIdProduct)
+		ctx := context.Background()
+		result, err := service.CreateTransaction(ctx, transactionDuplicateIdProduct)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "duplicate product_id", err.Error())
 	})
 
 	t.Run("Cannot get PriceProducts", func(t *testing.T) {
-		mockProductRepo.On("GetPriceProducts", &transaction).Return(nil, errors.New("cannot get price products")).Once()
-		result, err := service.CreateTransaction(transaction)
+		mockProductRepo.On("GetPriceProducts", mock.Anything, &transaction).Return(nil, errors.New("cannot get price products")).Once()
+		ctx := context.Background()
+		result, err := service.CreateTransaction(ctx, transaction)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "cannot get price products", err.Error())
@@ -75,9 +81,10 @@ func TestTransactionUseCase_CreateTransaction(t *testing.T) {
 	})
 
 	t.Run("Cannot create transaction", func(t *testing.T) {
-		mockProductRepo.On("GetPriceProducts", &transaction).Return(&transaction, nil).Once()
-		mockTransactionRepo.On("SaveCreateTransaction", &transaction).Return(nil, errors.New("cannot create transaction")).Once()
-		result, err := service.CreateTransaction(transaction)
+		mockProductRepo.On("GetPriceProducts", mock.Anything, &transaction).Return(&transaction, nil).Once()
+		mockTransactionRepo.On("SaveCreateTransaction", mock.Anything, &transaction).Return(nil, errors.New("cannot create transaction")).Once()
+		ctx := context.Background()
+		result, err := service.CreateTransaction(ctx, transaction)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "cannot create transaction", err.Error())
@@ -110,8 +117,9 @@ func TestTransactionUseCase_GetAllTransaction(t *testing.T) {
 		},
 	}
 	t.Run("success", func(t *testing.T) {
-		mockTransactionRepo.On("SaveGetAllTransaction").Return(transactions, nil).Once()
-		result, err := service.GetAllTransaction()
+		mockTransactionRepo.On("SaveGetAllTransaction", mock.Anything).Return(transactions, nil).Once()
+		ctx := context.Background()
+		result, err := service.GetAllTransaction(ctx)
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, transactions, result)
@@ -119,8 +127,9 @@ func TestTransactionUseCase_GetAllTransaction(t *testing.T) {
 	})
 
 	t.Run("cannot get transactions", func(t *testing.T) {
-		mockTransactionRepo.On("SaveGetAllTransaction").Return(nil, errors.New("cannot get transactions")).Once()
-		result, err := service.GetAllTransaction()
+		mockTransactionRepo.On("SaveGetAllTransaction", mock.Anything).Return(nil, errors.New("cannot get transactions")).Once()
+		ctx := context.Background()
+		result, err := service.GetAllTransaction(ctx)
 		assert.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "cannot get transactions", err.Error())
